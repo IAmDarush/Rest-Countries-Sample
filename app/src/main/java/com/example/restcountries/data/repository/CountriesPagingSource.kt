@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import com.example.restcountries.data.remote.CountriesService
 import com.example.restcountries.data.remote.model.Country
 import retrofit2.HttpException
+import timber.log.Timber
 import java.io.IOException
 
 private const val STARTING_PAGE_INDEX = 0
@@ -20,6 +21,7 @@ class CountriesPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Country> {
         val pageIndexKey = params.key ?: STARTING_PAGE_INDEX
+        Timber.i("PageIndexKey = $pageIndexKey")
         return try {
             if (cachedCountries.isEmpty()) {
                 cachedCountries = countriesService.getEuropeanCountries().filter {
@@ -29,7 +31,12 @@ class CountriesPagingSource(
                 }
             }
 
-            val countries = cachedCountries.subList(pageIndexKey * params.loadSize, params.loadSize)
+            val fromIndex = STARTING_PAGE_INDEX + pageIndexKey * params.loadSize
+            var toIndex = STARTING_PAGE_INDEX + (pageIndexKey + 1) * params.loadSize
+            if (toIndex > cachedCountries.size) toIndex = cachedCountries.size
+            val countries =
+                if (fromIndex >= cachedCountries.size) listOf()
+                else cachedCountries.subList(fromIndex, toIndex)
 
             val nextKey =
                 if (countries.isEmpty()) {

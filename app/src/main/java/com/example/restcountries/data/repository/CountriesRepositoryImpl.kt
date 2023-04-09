@@ -17,6 +17,7 @@ class CountriesRepositoryImpl @Inject constructor(
             pageSize = NETWORK_PAGE_SIZE,
             enablePlaceholders = false,
             initialLoadSize = 10,
+            prefetchDistance = 5
         )
         return Pager(
             config = config,
