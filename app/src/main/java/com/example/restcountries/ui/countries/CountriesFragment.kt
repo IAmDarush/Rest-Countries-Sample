@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -13,7 +15,9 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.restcountries.databinding.FragmentCountriesBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -38,6 +42,7 @@ class CountriesFragment : Fragment() {
         return binding.root
     }
 
+    @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -50,6 +55,10 @@ class CountriesFragment : Fragment() {
                 DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
             )
         }
+
+        binding.etSearch.onTextChanged().debounce(300).onEach {
+            viewModel.search(it?.toString() ?: "")
+        }.launchIn(lifecycleScope)
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -65,5 +74,14 @@ class CountriesFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+}
+
+fun EditText.onTextChanged(): Flow<CharSequence?> {
+    return callbackFlow {
+        val listener = doOnTextChanged { text, _, _, _ -> trySend(text) }
+        awaitClose { removeTextChangedListener(listener) }
+    }.onStart {
+        emit(text)
     }
 }
