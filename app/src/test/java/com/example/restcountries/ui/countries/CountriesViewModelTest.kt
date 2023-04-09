@@ -9,6 +9,7 @@ import com.example.restcountries.MainCoroutineRule
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.repository.CountriesRepository
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -84,10 +85,29 @@ class CountriesViewModelTest {
         deferred.complete(Unit)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is being fetched, When it it succeeds, Then populate the list`() {
+    fun `Given the countries list is being fetched, When it it succeeds, Then populate the list`() =
+        runTest {
+            val deferred = CompletableDeferred<Unit>()
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries() } returns getCountriesListFlow(
+                    this@runTest, deferred
+                )
+            }
 
-    }
+            vm = CountriesViewModel(mockCountriesRepository)
+            var countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.shouldBeEmpty()
+
+            deferred.complete(Unit)
+            countriesList = vm.countriesFlow.asSnapshot(this) {}
+
+            countriesList.shouldNotBeEmpty()
+            verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries()
+            }
+        }
 
     @Test
     fun `Given the countries list is being fetched, When it fails, Then display an error`() {
