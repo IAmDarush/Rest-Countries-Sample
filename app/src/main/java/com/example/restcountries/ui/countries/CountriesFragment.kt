@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.restcountries.databinding.FragmentCountriesBinding
@@ -68,6 +69,15 @@ class CountriesFragment : Fragment() {
             }
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            countriesAdapter.loadStateFlow.collectLatest { loadStates ->
+                val isLoading = loadStates.refresh is LoadState.Loading
+                binding.progressIndicator.visibility = when (isLoading) {
+                    true -> View.VISIBLE
+                    false -> View.INVISIBLE
+                }
+            }
+        }
 
     }
 
