@@ -39,7 +39,9 @@ abstract class NetworkModule {
 
         @Provides
         fun providesHttpLoggingInterceptor(): HttpLoggingInterceptor =
-            HttpLoggingInterceptor { message -> Timber.tag("OkHttp").d(message) }
+            HttpLoggingInterceptor { message -> Timber.tag("OkHttp").d(message) }.setLevel(
+                HttpLoggingInterceptor.Level.BODY
+            )
 
         @Provides
         fun providesCountriesService(retrofit: Retrofit): CountriesService =

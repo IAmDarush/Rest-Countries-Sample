@@ -5,7 +5,7 @@ import retrofit2.http.GET
 
 interface CountriesService {
 
-    @GET("/region/europe")
+    @GET("region/europe")
     suspend fun getEuropeanCountries(): List<Country>
 
 }

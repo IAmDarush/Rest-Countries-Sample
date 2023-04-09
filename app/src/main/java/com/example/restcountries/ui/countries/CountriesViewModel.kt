@@ -18,7 +18,7 @@ data class CountryItemUiState(
     val subregion: String? = null,
     val languages: List<String> = listOf(),
     val borders: List<String> = listOf(),
-    val area: Int? = null,
+    val area: Float? = null,
     val flagUrl: String? = null,
     val population: Int? = null,
 ) {
@@ -28,7 +28,7 @@ data class CountryItemUiState(
                 name = country.name?.common,
                 capital = if (country.capital.isNotEmpty()) country.capital[0] else null,
                 subregion = country.subregion,
-                languages = country.languages.flatMap { map -> map.values },
+                languages = country.languages.values.toList(),
                 borders = country.borders.toList(),
                 area = country.area,
                 flagUrl = country.flags?.pngImage,
