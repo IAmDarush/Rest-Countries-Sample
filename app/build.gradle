@@ -63,6 +63,10 @@ dependencies {
 
     // Unit test
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'io.kotest:kotest-assertions-core:5.5.5'
+    testImplementation "io.mockk:mockk:1.13.4"
+    testImplementation "androidx.paging:paging-testing:3.2.0-alpha04"
 
     // Instrumented test
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

@@ -1,6 +1,9 @@
 package com.example.restcountries.di
 
 import com.example.restcountries.data.remote.CountriesService
+import com.example.restcountries.data.repository.CountriesRepository
+import com.example.restcountries.data.repository.CountriesRepositoryImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,27 +18,32 @@ const val BASE_URL = "https://restcountries.com/v3.1/"
 
 @Module
 @InstallIn(SingletonComponent::class)
-class NetworkModule {
+abstract class NetworkModule {
 
-    @Provides
-    fun providesRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
-        .client(okHttpClient)
-        .baseUrl(BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    @Binds
+    abstract fun bindCountriesRepository(impl: CountriesRepositoryImpl): CountriesRepository
 
-    @Provides
-    fun providesOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
-        OkHttpClient.Builder()
-            .addInterceptor(httpLoggingInterceptor)
+    companion object {
+        @Provides
+        fun providesRetrofit(okHttpClient: OkHttpClient): Retrofit = Retrofit.Builder()
+            .client(okHttpClient)
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
             .build()
 
-    @Provides
-    fun providesHttpLoggingInterceptor(): HttpLoggingInterceptor =
-        HttpLoggingInterceptor { message -> Timber.tag("OkHttp").d(message) }
+        @Provides
+        fun providesOkHttpClient(httpLoggingInterceptor: HttpLoggingInterceptor): OkHttpClient =
+            OkHttpClient.Builder()
+                .addInterceptor(httpLoggingInterceptor)
+                .build()
 
-    @Provides
-    fun providesCountriesService(retrofit: Retrofit): CountriesService =
-        retrofit.create(CountriesService::class.java)
+        @Provides
+        fun providesHttpLoggingInterceptor(): HttpLoggingInterceptor =
+            HttpLoggingInterceptor { message -> Timber.tag("OkHttp").d(message) }
+
+        @Provides
+        fun providesCountriesService(retrofit: Retrofit): CountriesService =
+            retrofit.create(CountriesService::class.java)
+    }
 
 }
