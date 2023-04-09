@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -122,7 +121,7 @@ class CountriesViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is fetched, When the user wants to search for a specific country, Then search for the country`() =
+    fun `Given the countries list is fetched, When the user wants to search for a specific country, Then reduce the list`() =
         runTest {
             val dummySearchQuery = "germany"
             mockCountriesRepository.apply {
@@ -137,7 +136,6 @@ class CountriesViewModelTest {
             countriesList.size shouldBe 4
 
             vm.search(dummySearchQuery)
-            advanceUntilIdle()
 
             countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 1
@@ -148,15 +146,32 @@ class CountriesViewModelTest {
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given a specific country is being searched, When the result is found, Then reduce the list`() {
+    fun `Given a specific country is being searched, When the result is not found, Then show empty list`() =
+        runTest {
+            val dummySearchQuery = "invalidCountry"
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries() } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(dummySearchQuery) } returns getCountriesListFlow(
+                    this@runTest, searchQuery = dummySearchQuery
+                )
+            }
 
-    }
+            vm = CountriesViewModel(mockCountriesRepository)
+            var countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 4
 
-    @Test
-    fun `Given a specific country is being searched, When the result is not found, Then show empty list`() {
+            vm.search(dummySearchQuery)
 
-    }
+            countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 0
+            vm.uiState.value.filter.searchQuery shouldBe dummySearchQuery
+            verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries()
+                mockCountriesRepository.getEuropeanCountries(dummySearchQuery)
+            }
+        }
 
     @Test
     fun `Given a specific country is being searched, When the search fails, Then show error message`() {
