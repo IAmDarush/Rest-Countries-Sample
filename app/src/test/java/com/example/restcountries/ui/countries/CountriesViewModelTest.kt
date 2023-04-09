@@ -173,9 +173,4 @@ class CountriesViewModelTest {
             }
         }
 
-    @Test
-    fun `Given a specific country is being searched, When the search fails, Then show error message`() {
-
-    }
-
 }

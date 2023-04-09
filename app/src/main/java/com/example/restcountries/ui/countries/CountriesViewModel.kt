@@ -7,8 +7,10 @@ import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.repository.CountriesRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import javax.inject.Inject
 
 data class CountryItemUiState(
     val name: String? = null,
@@ -40,7 +42,10 @@ data class CountriesFilter(
     val searchQuery: String? = null,
 )
 
-class CountriesViewModel constructor(countriesRepository: CountriesRepository) : ViewModel() {
+@HiltViewModel
+class CountriesViewModel @Inject constructor(
+    countriesRepository: CountriesRepository
+) : ViewModel() {
 
     data class UiState(
         val filter: CountriesFilter = CountriesFilter()
