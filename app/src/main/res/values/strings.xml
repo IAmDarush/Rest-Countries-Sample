@@ -1,13 +1,5 @@
 <resources>
     <string name="app_name">Rest Countries</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="lorem_ipsum">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
-    volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus dui
-    nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad litora
-    torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend diam, vel
-    rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a, ornare ex. Sed
-    rhoncus est ut libero porta lobortis. Fusce in dictum tellus.
-  </string>
+    <string name="countries_fragment_label">Countries</string>
+    <string name="countries_input_search_hint">Type country name</string>
 </resources>

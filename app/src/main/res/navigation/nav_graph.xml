@@ -3,12 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/CountriesFragment">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.example.restcountries.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first" />
+        android:id="@+id/CountriesFragment"
+        android:name="com.example.restcountries.ui.countries.CountriesFragment"
+        android:label="@string/countries_fragment_label"
+        tools:layout="@layout/fragment_countries" />
 
 </navigation>
