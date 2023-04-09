@@ -22,15 +22,22 @@
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivFlag"
+                errorDrawable="@{@drawable/round_broken_image_24}"
+                imageUrl="@{ viewModel.flagUrl }"
+                placeholderDrawable="@{@drawable/round_image_24}"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:padding="2dp"
                 android:scaleType="centerCrop"
                 app:layout_constraintDimensionRatio="5:3"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearance="?attr/shapeAppearanceMediumComponent"
-                tools:src="@tools:sample/backgrounds/scenic" />
+                app:shapeAppearance="?shapeAppearanceMediumComponent"
+                app:shapeAppearanceOverlay="?shapeAppearanceCornerLarge"
+                app:strokeColor="#7986CB"
+                app:strokeWidth="1dp"
+                tools:src="@drawable/round_image_24" />
 
             <TextView
                 android:id="@+id/tvName"
