@@ -7,9 +7,11 @@ import androidx.paging.testing.asPagingSourceFactory
 import androidx.paging.testing.asSnapshot
 import com.example.restcountries.MainCoroutineRule
 import com.example.restcountries.data.remote.model.Country
+import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldNotBeEmpty
+import io.kotest.matchers.shouldBe
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit4.MockKRule
@@ -19,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -41,18 +44,26 @@ class CountriesViewModelTest {
 
     private fun getDummyCountriesList(): List<Country> {
         return listOf(
-            Country(),
-            Country()
+            Country(name = Name(common = "Germany")),
+            Country(name = Name(common = "France")),
+            Country(name = Name(common = "England")),
+            Country(name = Name(common = "Netherlands"))
         )
     }
 
     private fun getCountriesListFlow(
         coroutineScope: CoroutineScope,
-        deferred: CompletableDeferred<Unit>? = null
+        deferred: CompletableDeferred<Unit>? = null,
+        searchQuery: String? = null
     ): Flow<PagingData<Country>> {
+        val countriesList = getDummyCountriesList().filter {
+            return@filter if (searchQuery != null)
+                it.name?.common?.contains(searchQuery, ignoreCase = true) == true
+            else true
+        }
         val itemsFlow = flow {
             deferred?.await()
-            emit(getDummyCountriesList())
+            emit(countriesList)
         }
         val pagingSourceFactory = itemsFlow.asPagingSourceFactory(coroutineScope = coroutineScope)
         val pagingConfig = PagingConfig(
@@ -109,15 +120,33 @@ class CountriesViewModelTest {
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is being fetched, When it fails, Then display an error`() {
+    fun `Given the countries list is fetched, When the user wants to search for a specific country, Then search for the country`() =
+        runTest {
+            val dummySearchQuery = "germany"
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries() } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(dummySearchQuery) } returns getCountriesListFlow(
+                    this@runTest, searchQuery = dummySearchQuery
+                )
+            }
 
-    }
+            vm = CountriesViewModel(mockCountriesRepository)
+            var countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 4
 
-    @Test
-    fun `Given the countries list is fetched, When the user wants to search for a specific country, Then search for the country`() {
+            vm.search(dummySearchQuery)
+            advanceUntilIdle()
 
-    }
+            countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 1
+            vm.uiState.value.filter.searchQuery shouldBe dummySearchQuery
+            verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries()
+                mockCountriesRepository.getEuropeanCountries("germany")
+            }
+        }
 
     @Test
     fun `Given a specific country is being searched, When the result is found, Then reduce the list`() {

@@ -11,7 +11,8 @@ private const val STARTING_PAGE_INDEX = 0
 const val NETWORK_PAGE_SIZE = 10
 
 class CountriesPagingSource(
-    private val countriesService: CountriesService
+    private val countriesService: CountriesService,
+    private val searchQuery: String?
 ) : PagingSource<Int, Country>() {
 
     // FIXME: remove local caching once the server is able to send paginated data
@@ -21,7 +22,11 @@ class CountriesPagingSource(
         val pageIndexKey = params.key ?: STARTING_PAGE_INDEX
         return try {
             if (cachedCountries.isEmpty()) {
-                cachedCountries = countriesService.getEuropeanCountries()
+                cachedCountries = countriesService.getEuropeanCountries().filter {
+                    if (searchQuery != null)
+                        it.name?.common?.contains(searchQuery, ignoreCase = true) == true
+                    else true
+                }
             }
 
             val countries = cachedCountries.subList(pageIndexKey * params.loadSize, params.loadSize)

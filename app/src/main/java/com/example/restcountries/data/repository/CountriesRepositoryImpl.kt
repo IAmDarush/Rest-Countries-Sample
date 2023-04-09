@@ -12,7 +12,7 @@ class CountriesRepositoryImpl @Inject constructor(
     private val countriesService: CountriesService
 ) : CountriesRepository {
 
-    override fun getEuropeanCountries(): Flow<PagingData<Country>> {
+    override fun getEuropeanCountries(searchQuery: String?): Flow<PagingData<Country>> {
         val config = PagingConfig(
             pageSize = NETWORK_PAGE_SIZE,
             enablePlaceholders = false,
@@ -20,7 +20,7 @@ class CountriesRepositoryImpl @Inject constructor(
         )
         return Pager(
             config = config,
-            pagingSourceFactory = { CountriesPagingSource(countriesService) }
+            pagingSourceFactory = { CountriesPagingSource(countriesService, searchQuery) }
         ).flow
     }
 

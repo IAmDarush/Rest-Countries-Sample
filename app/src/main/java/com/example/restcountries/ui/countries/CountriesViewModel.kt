@@ -2,14 +2,13 @@ package com.example.restcountries.ui.countries
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.repository.CountriesRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.*
 
 data class CountryItemUiState(
     val name: String? = null,
@@ -37,18 +36,33 @@ data class CountryItemUiState(
     }
 }
 
+data class CountriesFilter(
+    val searchQuery: String? = null,
+)
+
 class CountriesViewModel constructor(countriesRepository: CountriesRepository) : ViewModel() {
 
     data class UiState(
-        val isLoading: Boolean = false
+        val filter: CountriesFilter = CountriesFilter()
     )
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
-    val countriesFlow = countriesRepository.getEuropeanCountries().map { pagingData ->
-        pagingData.map { CountryItemUiState.mapDomainCountryToUi(it) }
-    }.cachedIn(viewModelScope)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val countriesFlow: Flow<PagingData<CountryItemUiState>> = uiState.flatMapLatest {
+        flowOf(it.filter)
+    }.distinctUntilChanged()
+        .flatMapLatest { filter ->
+            countriesRepository.getEuropeanCountries(filter.searchQuery).map { pagingData ->
+                pagingData.map { CountryItemUiState.mapDomainCountryToUi(it) }
+            }
+        }.cachedIn(viewModelScope)
 
+    fun search(searchQuery: String) {
+        _uiState.update {
+            it.copy(filter = it.filter.copy(searchQuery = searchQuery))
+        }
+    }
 
 }

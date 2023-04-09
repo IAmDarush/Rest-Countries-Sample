@@ -6,6 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface CountriesRepository {
 
-    fun getEuropeanCountries(): Flow<PagingData<Country>>
+    fun getEuropeanCountries(searchQuery: String? = null): Flow<PagingData<Country>>
 
 }
