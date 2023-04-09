@@ -8,4 +8,5 @@
     <string name="details_label_population">Population</string>
     <string name="details_label_area">Area</string>
     <string name="details_label_borders">Borders</string>
+    <string name="details_fragment_label">Details</string>
 </resources>

@@ -10,6 +10,7 @@ import com.example.restcountries.data.repository.CountriesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import java.io.Serializable
 import javax.inject.Inject
 
 data class CountryItemUiState(
@@ -21,7 +22,7 @@ data class CountryItemUiState(
     val area: Float? = null,
     val flagUrl: String? = null,
     val population: Int? = null,
-) {
+): Serializable {
     companion object {
         fun mapDomainCountryToUi(country: Country): CountryItemUiState {
             return CountryItemUiState(

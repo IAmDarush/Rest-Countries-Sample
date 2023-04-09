@@ -9,6 +9,20 @@
         android:id="@+id/CountriesFragment"
         android:name="com.example.restcountries.ui.countries.CountriesFragment"
         android:label="@string/countries_fragment_label"
-        tools:layout="@layout/fragment_countries" />
+        tools:layout="@layout/fragment_countries" >
+        <action
+            android:id="@+id/action_CountriesFragment_to_DetailsFragment"
+            app:destination="@id/DetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/DetailsFragment"
+        android:name="com.example.restcountries.ui.details.DetailsFragment"
+        android:label="@string/details_fragment_label"
+        tools:layout="@layout/fragment_details">
+        <argument
+            android:name="country"
+            app:argType="com.example.restcountries.ui.countries.CountryItemUiState" />
+    </fragment>
 
 </navigation>
