@@ -23,6 +23,10 @@ data class CountryItemUiState(
     val flagUrl: String? = null,
     val population: Int? = null,
 ): Serializable {
+
+    val languagesCommaSeparated: String = languages.joinToString()
+    val bordersCommaSeparated: String = borders.joinToString()
+
     companion object {
         fun mapDomainCountryToUi(country: Country): CountryItemUiState {
             return CountryItemUiState(
