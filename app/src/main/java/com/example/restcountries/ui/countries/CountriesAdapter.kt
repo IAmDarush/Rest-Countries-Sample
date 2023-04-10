@@ -7,8 +7,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.restcountries.databinding.ItemCountryBinding
 
-class CountriesAdapter :
-    PagingDataAdapter<CountryItemUiState, CountriesAdapter.CountryItemViewHolder>(COUNTRY_DIFFER) {
+class CountriesAdapter(
+    val onItemClick: (item: CountryItemUiState) -> Unit
+) : PagingDataAdapter<CountryItemUiState, CountriesAdapter.CountryItemViewHolder>(COUNTRY_DIFFER) {
 
     override fun onBindViewHolder(holder: CountryItemViewHolder, position: Int) {
         holder.bindData(position)
@@ -36,6 +37,10 @@ class CountriesAdapter :
                 binding.tvCountry.text = item.name
                 binding.tvSubRegion.text = item.subregion
                 binding.tvCapital.text = item.capital
+
+                binding.root.setOnClickListener {
+                    onItemClick(item)
+                }
             }
 
         }

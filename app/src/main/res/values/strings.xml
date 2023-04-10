@@ -2,4 +2,11 @@
     <string name="app_name">Rest Countries</string>
     <string name="countries_fragment_label">Countries</string>
     <string name="countries_input_search_hint">Type country name</string>
+    <string name="details_label_capital">Capital</string>
+    <string name="details_label_subregion">Subregion</string>
+    <string name="details_label_languages">Languages</string>
+    <string name="details_label_population">Population</string>
+    <string name="details_label_area">Area</string>
+    <string name="details_label_borders">Borders</string>
+    <string name="details_fragment_label">Details</string>
 </resources>

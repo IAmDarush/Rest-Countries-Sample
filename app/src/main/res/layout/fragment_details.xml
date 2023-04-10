@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.restcountries.ui.countries.CountryItemUiState" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            tools:context=".ui.details.DetailsFragment">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivFlag"
+                errorDrawable="@{@drawable/round_broken_image_24}"
+                imageUrl="@{ viewModel.flagUrl }"
+                placeholderDrawable="@{@drawable/round_image_24}"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:padding="2dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="5:3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearance="?shapeAppearanceMediumComponent"
+                app:shapeAppearanceOverlay="?shapeAppearanceCornerLarge"
+                app:strokeColor="#7986CB"
+                app:strokeWidth="1dp"
+                tools:src="@drawable/round_image_24" />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@{ viewModel.name }"
+                android:textAlignment="center"
+                android:textAllCaps="false"
+                android:textAppearance="?textAppearanceHeadline4"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivFlag"
+                tools:text="Germany" />
+
+            <com.google.android.material.card.MaterialCardView
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:contentPadding="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvName">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lblCapital"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/details_label_capital"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textColor="#283593"
+                        app:layout_constraintEnd_toStartOf="@id/tvCapital"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvCapital"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{ viewModel.capital }"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?textAppearanceSubtitle1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblCapital"
+                        app:layout_constraintTop_toTopOf="@id/lblCapital"
+                        tools:text="Berlin" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lblSubregion"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/details_label_subregion"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textColor="#283593"
+                        app:layout_constraintEnd_toStartOf="@id/tvCapital"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/lblCapital" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvSubregion"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{ viewModel.subregion }"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?textAppearanceSubtitle1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblCapital"
+                        app:layout_constraintTop_toTopOf="@id/lblSubregion"
+                        tools:text="Western Europe" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lblLanguages"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/details_label_languages"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textColor="#283593"
+                        app:layout_constraintEnd_toStartOf="@id/tvCapital"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvSubregion" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvLanguages"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{ viewModel.languagesCommaSeparated }"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?textAppearanceSubtitle1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblCapital"
+                        app:layout_constraintTop_toTopOf="@id/lblLanguages"
+                        tools:text="German, English" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lblPopulation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/details_label_population"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textColor="#283593"
+                        app:layout_constraintEnd_toStartOf="@id/tvCapital"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvLanguages" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvPopulation"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{ viewModel.population.toString() }"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?textAppearanceSubtitle1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblCapital"
+                        app:layout_constraintTop_toTopOf="@id/lblPopulation"
+                        tools:text="43,873,283" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lblArea"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/details_label_area"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textColor="#283593"
+                        app:layout_constraintEnd_toStartOf="@id/tvCapital"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvPopulation" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvArea"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{ viewModel.area.toString() }"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?textAppearanceSubtitle1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblCapital"
+                        app:layout_constraintTop_toTopOf="@id/lblArea"
+                        tools:text="357114.0" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/lblBorders"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/details_label_borders"
+                        android:textAppearance="?textAppearanceTitleMedium"
+                        android:textColor="#283593"
+                        app:layout_constraintEnd_toStartOf="@id/tvCapital"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvArea" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/tvBorders"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@{ viewModel.bordersCommaSeparated }"
+                        android:textAlignment="textEnd"
+                        android:textAppearance="?textAppearanceSubtitle1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/lblCapital"
+                        app:layout_constraintTop_toTopOf="@id/lblBorders"
+                        tools:text="AUT, BEL, CEZ, DNK, FRA, LUX, NLD, POL, CHE" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</layout>
