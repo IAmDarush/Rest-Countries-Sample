@@ -78,18 +78,6 @@ class CountriesViewModel @Inject constructor(
         }
     }
 
-    fun sortAlphabetically(shouldSort: Boolean) {
-        _uiState.update {
-            it.copy(filter = it.filter.copy(shouldSortAlphabetically = shouldSort))
-        }
-    }
-
-    fun sortByPopulation(shouldSort: Boolean) {
-        _uiState.update {
-            it.copy(filter = it.filter.copy(shouldSortByPopulation = shouldSort))
-        }
-    }
-
     fun filterList(filter: CountriesFilter) {
         _uiState.update {
             it.copy(filter = filter)

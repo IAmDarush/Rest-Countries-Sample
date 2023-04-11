@@ -187,13 +187,12 @@ class CountriesViewModelTest {
             vm.uiState.value.filter.searchQuery shouldBe null
             vm.uiState.value.filter.shouldSortAlphabetically shouldBe false
 
-            vm.sortAlphabetically(shouldSort = true)
+            val filter = CountriesFilter(shouldSortAlphabetically = true)
+            vm.filterList(filter)
 
-            vm.uiState.value.filter.shouldSortAlphabetically shouldBe true
+            vm.uiState.value.filter shouldBe filter
             verify {
-                mockCountriesRepository.getEuropeanCountries(
-                    CountriesFilter(shouldSortAlphabetically = true)
-                )
+                mockCountriesRepository.getEuropeanCountries(filter)
             }
         }
 
@@ -209,9 +208,9 @@ class CountriesViewModelTest {
             countriesList.size shouldBe 4
             vm.uiState.value.filter.shouldSortByPopulation shouldBe false
 
-            vm.sortByPopulation(shouldSort = true)
-
             val filter = CountriesFilter(shouldSortByPopulation = true)
+            vm.filterList(filter)
+
             vm.uiState.value.filter shouldBe filter
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilter())
