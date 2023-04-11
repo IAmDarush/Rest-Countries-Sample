@@ -10,14 +10,15 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.restcountries.R
 import com.example.restcountries.databinding.FragmentCountriesBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
@@ -31,7 +32,9 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class CountriesFragment : Fragment() {
 
-    private val viewModel: CountriesViewModel by viewModels()
+    private val viewModel by navGraphViewModels<CountriesViewModel>(R.id.countriesNavGraph) {
+        defaultViewModelProviderFactory
+    }
     private var _binding: FragmentCountriesBinding? = null
 
     // This property is only valid between onCreateView and onDestroyView.
