@@ -214,14 +214,33 @@ class CountriesViewModelTest {
             val filter = CountriesFilter(shouldSortByPopulation = true)
             vm.uiState.value.filter shouldBe filter
             verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries(CountriesFilter())
                 mockCountriesRepository.getEuropeanCountries(filter)
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() {
+    fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() =
+        runTest {
+            val emptyFilter = CountriesFilter()
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
+            }
+            vm = CountriesViewModel(mockCountriesRepository)
+            val countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 4
+            vm.uiState.value.filter.subregions shouldBe setOf()
 
-    }
+            val filter = CountriesFilter(subregions = setOf("Western Europe"))
+            vm.filterList(filter)
+
+            vm.uiState.value.filter shouldBe filter
+            verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries(emptyFilter)
+                mockCountriesRepository.getEuropeanCountries(filter)
+            }
+        }
 
     @Test
     fun `Given the countries list is ready, When the user wants to clear the filtering, Then show the list unfiltered`() {

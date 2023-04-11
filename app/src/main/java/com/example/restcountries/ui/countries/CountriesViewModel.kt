@@ -47,6 +47,7 @@ data class CountriesFilter(
     val searchQuery: String? = null,
     val shouldSortAlphabetically: Boolean = false,
     val shouldSortByPopulation: Boolean = false,
+    val subregions: Set<String> = setOf(),
 )
 
 @HiltViewModel
@@ -86,6 +87,12 @@ class CountriesViewModel @Inject constructor(
     fun sortByPopulation(shouldSort: Boolean) {
         _uiState.update {
             it.copy(filter = it.filter.copy(shouldSortByPopulation = shouldSort))
+        }
+    }
+
+    fun filterList(filter: CountriesFilter) {
+        _uiState.update {
+            it.copy(filter = filter)
         }
     }
 
