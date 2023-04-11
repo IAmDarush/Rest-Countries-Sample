@@ -84,9 +84,11 @@ class CountriesViewModel @Inject constructor(
     }
 
     fun filterList(filter: CountriesFilter) {
-        _uiState.update {
-            it.copy(filter = filter)
-        }
+        _uiState.update { it.copy(filter = filter) }
+    }
+
+    fun resetFilters() {
+        _uiState.update { it.copy(filter = CountriesFilter()) }
     }
 
 }

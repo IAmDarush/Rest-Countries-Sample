@@ -240,9 +240,40 @@ class CountriesViewModelTest {
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is ready, When the user wants to clear the filtering, Then show the list unfiltered`() {
+    fun `Given the countries list is ready, When the user wants to clear the filtering, Then show the list unfiltered`() =
+        runTest {
+            val emptyFilter = CountriesFilter(
+                searchQuery = null,
+                sortType = SortType.NONE,
+                subregions = setOf()
+            )
+            val fullFilter = CountriesFilter(
+                searchQuery = "xyz",
+                sortType = SortType.ALPHABETICAL_ASC,
+                subregions = setOf("Northern Europe", "Western Europe")
+            )
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(fullFilter) } returns getCountriesListFlow(this@runTest)
+            }
+            vm = CountriesViewModel(mockCountriesRepository)
+            val countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 4
+            vm.filterList(fullFilter)
+            vm.uiState.value.filter shouldBe fullFilter
 
-    }
+            vm.resetFilters()
+
+            vm.uiState.value.filter shouldBe emptyFilter
+            verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries(fullFilter)
+            }
+            verify(exactly = 2) {
+                mockCountriesRepository.getEuropeanCountries(emptyFilter)
+            }
+        }
+
 
 }
