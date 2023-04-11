@@ -184,10 +184,9 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.uiState.value.filter.searchQuery shouldBe null
-            vm.uiState.value.filter.shouldSortAlphabetically shouldBe false
+            vm.uiState.value.filter.sortType shouldBe SortType.NONE
 
-            val filter = CountriesFilter(shouldSortAlphabetically = true)
+            val filter = CountriesFilter(sortType = SortType.ALPHABETICAL_ASC)
             vm.filterList(filter)
 
             vm.uiState.value.filter shouldBe filter
@@ -206,9 +205,9 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.uiState.value.filter.shouldSortByPopulation shouldBe false
+            vm.uiState.value.filter.sortType shouldBe SortType.NONE
 
-            val filter = CountriesFilter(shouldSortByPopulation = true)
+            val filter = CountriesFilter(sortType = SortType.POPULATION_ASC)
             vm.filterList(filter)
 
             vm.uiState.value.filter shouldBe filter

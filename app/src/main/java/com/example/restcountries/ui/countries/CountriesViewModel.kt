@@ -45,10 +45,15 @@ data class CountryItemUiState(
 
 data class CountriesFilter(
     val searchQuery: String? = null,
-    val shouldSortAlphabetically: Boolean = false,
-    val shouldSortByPopulation: Boolean = false,
+    val sortType: SortType = SortType.NONE,
     val subregions: Set<String> = setOf(),
 )
+
+enum class SortType {
+    NONE,
+    ALPHABETICAL_ASC,
+    POPULATION_ASC
+}
 
 @HiltViewModel
 class CountriesViewModel @Inject constructor(
