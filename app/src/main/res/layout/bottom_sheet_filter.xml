@@ -165,19 +165,28 @@
             android:layout_marginTop="16dp"
             android:text="@string/action_apply"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/btnResetAll"
+            app:layout_constraintStart_toEndOf="@id/frameLayout"
             app:layout_constraintTop_toBottomOf="@id/dividerFilter" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnResetAll"
-            style="?attr/materialButtonOutlinedStyle"
+        <FrameLayout
+            android:id="@+id/frameLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:text="@string/action_rest_all"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             app:layout_constraintEnd_toStartOf="@id/btnApply"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btnApply" />
+            app:layout_constraintTop_toTopOf="@id/btnApply">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnResetAll"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/action_rest_all" />
+
+        </FrameLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
