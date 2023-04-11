@@ -173,4 +173,24 @@ class CountriesViewModelTest {
             }
         }
 
+    @Test
+    fun `Given the countries list is ready, When the user wants to sort alphabetically, Then sort the list by alphabetic order ascending`() {
+
+    }
+
+    @Test
+    fun `Given the countries list is ready, When the user wants to sort by population, Then sort the list by population ascending`() {
+
+    }
+
+    @Test
+    fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() {
+
+    }
+
+    @Test
+    fun `Given the countries list is ready, When the user wants to clear the filtering, Then show the list unfiltered`() {
+
+    }
+
 }
