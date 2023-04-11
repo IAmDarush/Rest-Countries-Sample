@@ -9,4 +9,11 @@
     <string name="details_label_area">Area</string>
     <string name="details_label_borders">Borders</string>
     <string name="details_fragment_label">Details</string>
+    <string name="countries_filter_title">Sort and Filter</string>
+    <string name="filter_sheet_sort_alphabetical_order">Alphabetical order</string>
+    <string name="filter_sheet_sort_population">Population</string>
+    <string name="filter_sheet_label_sort_by">Sort by</string>
+    <string name="filter_sheet_label_subregion">Subregion</string>
+    <string name="action_apply">Apply</string>
+    <string name="action_rest_all">Rest All</string>
 </resources>
