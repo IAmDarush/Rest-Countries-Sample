@@ -62,7 +62,16 @@ class CountriesViewModel @Inject constructor(
 
     data class UiState(
         val filter: CountriesFilter = CountriesFilter()
-    )
+    ) {
+
+        val filterCount: Int
+            get() {
+                val sortCount = if (filter.sortType == SortType.NONE) 0 else 1
+                val filterCount = filter.subregions.size
+                return sortCount + filterCount
+            }
+
+    }
 
     data class FilterUiState(
         val sortType: SortType = SortType.NONE,

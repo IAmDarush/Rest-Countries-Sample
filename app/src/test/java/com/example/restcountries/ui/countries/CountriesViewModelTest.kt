@@ -189,10 +189,12 @@ class CountriesViewModelTest {
             vm.filterUiState.value.filterCount shouldBe 0
 
             vm.sortAlphabetically()
+            vm.uiState.value.filterCount shouldBe 0
             vm.applyFilters()
 
             vm.filterUiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
             vm.filterUiState.value.filterCount shouldBe 1
+            vm.uiState.value.filterCount shouldBe 1
             val filter = CountriesFilter(sortType = SortType.ALPHABETICAL_ASC)
             verify {
                 mockCountriesRepository.getEuropeanCountries(filter)
@@ -213,10 +215,12 @@ class CountriesViewModelTest {
             vm.filterUiState.value.filterCount shouldBe 0
 
             vm.sortByPopulation()
+            vm.uiState.value.filterCount shouldBe 0
             vm.applyFilters()
 
             vm.filterUiState.value.sortType shouldBe SortType.POPULATION_ASC
             vm.filterUiState.value.filterCount shouldBe 1
+            vm.uiState.value.filterCount shouldBe 1
             val filter = CountriesFilter(sortType = SortType.POPULATION_ASC)
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilter())
@@ -237,13 +241,16 @@ class CountriesViewModelTest {
             countriesList.size shouldBe 4
             vm.filterUiState.value.subregions shouldBe setOf()
             vm.filterUiState.value.filterCount shouldBe 0
+            vm.uiState.value.filterCount shouldBe 0
 
             val subRegion = "Western Europe"
             vm.selectSubregion(subRegion)
+            vm.uiState.value.filterCount shouldBe 0
             vm.applyFilters()
 
             vm.filterUiState.value.subregions.shouldContainOnly(subRegion)
             vm.filterUiState.value.filterCount shouldBe 1
+            vm.uiState.value.filterCount shouldBe 1
             val filter = CountriesFilter(subregions = setOf(subRegion))
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(emptyFilter)
@@ -275,8 +282,10 @@ class CountriesViewModelTest {
             vm.filterUiState.value.sortType shouldBe SortType.POPULATION_ASC
             vm.filterUiState.value.subregions shouldBe subregions
             vm.filterUiState.value.filterCount shouldBe 3
+            vm.uiState.value.filterCount shouldBe 0
             vm.applyFilters()
 
+            vm.uiState.value.filterCount shouldBe 3
             val filter = CountriesFilter(
                 sortType = SortType.POPULATION_ASC,
                 subregions = subregions
@@ -317,7 +326,9 @@ class CountriesViewModelTest {
             vm.filterUiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
             vm.filterUiState.value.subregions shouldBe subregions
             vm.filterUiState.value.filterCount shouldBe 3
+            vm.uiState.value.filterCount shouldBe 0
             vm.applyFilters()
+            vm.uiState.value.filterCount shouldBe 3
 
             vm.resetFilters()
 
@@ -326,6 +337,7 @@ class CountriesViewModelTest {
                 subregions = setOf()
             )
             vm.filterUiState.value.filterCount shouldBe 0
+            vm.uiState.value.filterCount shouldBe 0
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(fullFilter)
             }

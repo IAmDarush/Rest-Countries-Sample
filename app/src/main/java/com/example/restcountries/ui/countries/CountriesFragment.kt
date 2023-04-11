@@ -5,7 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
+import android.view.ViewTreeObserver
 import android.widget.EditText
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
@@ -20,6 +22,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.restcountries.R
 import com.example.restcountries.databinding.FragmentCountriesBinding
+import com.example.restcountries.utils.ViewUtils
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
+import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.google.android.material.color.MaterialColors
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
@@ -41,6 +48,7 @@ class CountriesFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var countriesAdapter: CountriesAdapter
+    private var badgeDrawable: BadgeDrawable? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +61,22 @@ class CountriesFragment : Fragment() {
     @OptIn(FlowPreview::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Prepare the filters badge once the views are laid out
+        binding.btnFilter.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            @androidx.annotation.OptIn(ExperimentalBadgeUtils::class)
+            override fun onGlobalLayout() {
+                badgeDrawable =
+                    BadgeDrawable.createFromResource(requireContext(), R.xml.filter_badge).apply {
+                        horizontalOffsetWithText = ViewUtils.dpToPx(resources, 20f).toInt()
+                        verticalOffsetWithText = ViewUtils.dpToPx(resources, 20f).toInt()
+                        BadgeUtils.attachBadgeDrawable(this, binding.btnFilter)
+                    }
+                updateBadgeDrawable(viewModel.filterUiState.value.filterCount)
+                binding.btnFilter.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { rv, windowInsets ->
             val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -97,8 +121,15 @@ class CountriesFragment : Fragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.countriesFlow.collectLatest {
-                    countriesAdapter.submitData(it)
+                launch {
+                    viewModel.countriesFlow.collectLatest {
+                        countriesAdapter.submitData(it)
+                    }
+                }
+
+                launch {
+                    viewModel.uiState.map { it.filterCount }.distinctUntilChanged()
+                        .collect { count -> updateBadgeDrawable(count) }
                 }
             }
         }
@@ -119,6 +150,25 @@ class CountriesFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    private fun updateBadgeDrawable(number: Int) {
+        when (number > 0) {
+            true -> {
+                badgeDrawable?.number = number
+                badgeDrawable?.backgroundColor =
+                    MaterialColors.getColor(
+                        requireView(),
+                        com.google.android.material.R.attr.colorError
+                    )
+            }
+            false -> {
+                badgeDrawable?.clearNumber()
+                badgeDrawable?.backgroundColor =
+                    ResourcesCompat.getColor(resources, android.R.color.transparent, null)
+            }
+        }
+    }
+
 }
 
 fun EditText.onTextChanged(): Flow<CharSequence?> {
