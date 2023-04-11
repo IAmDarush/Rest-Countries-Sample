@@ -64,8 +64,16 @@ class CountriesViewModel @Inject constructor(
         val filter: CountriesFilter = CountriesFilter()
     )
 
+    data class FilterUiState(
+        val sortType: SortType = SortType.NONE,
+        val subregions: Set<String> = setOf()
+    )
+
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+
+    private val _filterUiState = MutableStateFlow(FilterUiState())
+    val filterUiState: StateFlow<FilterUiState> = _filterUiState.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val countriesFlow: Flow<PagingData<CountryItemUiState>> = uiState.flatMapLatest {
@@ -83,12 +91,43 @@ class CountriesViewModel @Inject constructor(
         }
     }
 
-    fun filterList(filter: CountriesFilter) {
-        _uiState.update { it.copy(filter = filter) }
+    fun sortAlphabetically() {
+        _filterUiState.update { it.copy(sortType = SortType.ALPHABETICAL_ASC) }
+    }
+
+    fun sortByPopulation() {
+        _filterUiState.update { it.copy(sortType = SortType.POPULATION_ASC) }
+    }
+
+    fun selectSubregion(subregion: String) {
+        val subregions = filterUiState.value.subregions.toMutableSet().apply {
+            add(subregion)
+        }
+        _filterUiState.update { it.copy(subregions = subregions) }
+    }
+
+    fun deselectSubregion(subregion: String) {
+        val subregions = filterUiState.value.subregions.toMutableSet().apply {
+            remove(subregion)
+        }
+        _filterUiState.update { it.copy(subregions = subregions) }
+    }
+
+    fun applyFilters() {
+        val filters = uiState.value.filter.copy(
+            sortType = filterUiState.value.sortType,
+            subregions = filterUiState.value.subregions
+        )
+        _uiState.update { it.copy(filter = filters) }
     }
 
     fun resetFilters() {
+        _filterUiState.update { FilterUiState() }
         _uiState.update { it.copy(filter = CountriesFilter()) }
+    }
+
+    fun sortByNone() {
+        _filterUiState.update { it.copy(sortType = SortType.NONE) }
     }
 
 }

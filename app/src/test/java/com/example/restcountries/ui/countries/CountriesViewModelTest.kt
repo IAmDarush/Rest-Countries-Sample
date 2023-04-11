@@ -10,6 +10,7 @@ import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -184,12 +185,13 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.uiState.value.filter.sortType shouldBe SortType.NONE
+            vm.filterUiState.value.sortType shouldBe SortType.NONE
 
+            vm.sortAlphabetically()
+            vm.applyFilters()
+
+            vm.filterUiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
             val filter = CountriesFilter(sortType = SortType.ALPHABETICAL_ASC)
-            vm.filterList(filter)
-
-            vm.uiState.value.filter shouldBe filter
             verify {
                 mockCountriesRepository.getEuropeanCountries(filter)
             }
@@ -205,12 +207,13 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.uiState.value.filter.sortType shouldBe SortType.NONE
+            vm.filterUiState.value.sortType shouldBe SortType.NONE
 
+            vm.sortByPopulation()
+            vm.applyFilters()
+
+            vm.filterUiState.value.sortType shouldBe SortType.POPULATION_ASC
             val filter = CountriesFilter(sortType = SortType.POPULATION_ASC)
-            vm.filterList(filter)
-
-            vm.uiState.value.filter shouldBe filter
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilter())
                 mockCountriesRepository.getEuropeanCountries(filter)
@@ -228,12 +231,14 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.uiState.value.filter.subregions shouldBe setOf()
+            vm.filterUiState.value.subregions shouldBe setOf()
 
-            val filter = CountriesFilter(subregions = setOf("Western Europe"))
-            vm.filterList(filter)
+            val subRegion = "Western Europe"
+            vm.selectSubregion(subRegion)
+            vm.applyFilters()
 
-            vm.uiState.value.filter shouldBe filter
+            vm.filterUiState.value.subregions.shouldContainOnly(subRegion)
+            val filter = CountriesFilter(subregions = setOf(subRegion))
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(emptyFilter)
                 mockCountriesRepository.getEuropeanCountries(filter)
@@ -251,16 +256,24 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.uiState.value.filter.sortType shouldBe SortType.NONE
-            vm.uiState.value.filter.subregions shouldBe setOf()
+            vm.filterUiState.value.sortType shouldBe SortType.NONE
+            vm.filterUiState.value.subregions shouldBe setOf()
+
+            vm.sortByPopulation()
+            val subregions = setOf("Western Europe", "Northern Europe")
+            val iterator = subregions.iterator()
+            while (iterator.hasNext()) {
+                vm.selectSubregion(iterator.next())
+                vm.selectSubregion(iterator.next())
+            }
+            vm.filterUiState.value.sortType shouldBe SortType.POPULATION_ASC
+            vm.filterUiState.value.subregions shouldBe subregions
+            vm.applyFilters()
 
             val filter = CountriesFilter(
                 sortType = SortType.POPULATION_ASC,
-                subregions = setOf("Western Europe")
+                subregions = subregions
             )
-            vm.filterList(filter)
-
-            vm.uiState.value.filter shouldBe filter
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(emptyFilter)
                 mockCountriesRepository.getEuropeanCountries(filter)
@@ -269,7 +282,7 @@ class CountriesViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is ready, When the user wants to clear the filtering, Then show the list unfiltered`() =
+    fun `Given the countries list is ready, When the user wants to clear all the filtering, Then show the whole list`() =
         runTest {
             val emptyFilter = CountriesFilter(
                 searchQuery = null,
@@ -277,7 +290,7 @@ class CountriesViewModelTest {
                 subregions = setOf()
             )
             val fullFilter = CountriesFilter(
-                searchQuery = "xyz",
+                searchQuery = null,
                 sortType = SortType.ALPHABETICAL_ASC,
                 subregions = setOf("Northern Europe", "Western Europe")
             )
@@ -288,12 +301,22 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.filterList(fullFilter)
-            vm.uiState.value.filter shouldBe fullFilter
+            vm.sortAlphabetically()
+            val subregions = setOf("Western Europe", "Northern Europe")
+            subregions.forEach {
+                vm.selectSubregion(it)
+                vm.selectSubregion(it)
+            }
+            vm.filterUiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
+            vm.filterUiState.value.subregions shouldBe subregions
+            vm.applyFilters()
 
             vm.resetFilters()
 
-            vm.uiState.value.filter shouldBe emptyFilter
+            vm.filterUiState.value shouldBe CountriesViewModel.FilterUiState(
+                sortType = SortType.NONE,
+                subregions = setOf()
+            )
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(fullFilter)
             }
