@@ -82,7 +82,8 @@ class CountriesViewModelTest {
     fun `Given the screen is opened, Then start fetching the countries list`() = runTest {
         val deferred = CompletableDeferred<Unit>()
         mockCountriesRepository.apply {
-            every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(this@runTest, deferred)
+            every { getEuropeanCountries(CountriesFilter()) } returns
+                    getCountriesListFlow(this@runTest, deferred)
         }
 
         vm = CountriesViewModel(mockCountriesRepository)
@@ -190,14 +191,32 @@ class CountriesViewModelTest {
 
             vm.uiState.value.filter.shouldSortAlphabetically shouldBe true
             verify {
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter(shouldSortAlphabetically = true))
+                mockCountriesRepository.getEuropeanCountries(
+                    CountriesFilter(shouldSortAlphabetically = true)
+                )
             }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is ready, When the user wants to sort by population, Then sort the list by population ascending`() {
+    fun `Given the countries list is ready, When the user wants to sort by population, Then sort the list by population ascending`() =
+        runTest {
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(this@runTest)
+            }
+            vm = CountriesViewModel(mockCountriesRepository)
+            val countriesList = vm.countriesFlow.asSnapshot(this) {}
+            countriesList.size shouldBe 4
+            vm.uiState.value.filter.shouldSortByPopulation shouldBe false
 
-    }
+            vm.sortByPopulation(shouldSort = true)
+
+            val filter = CountriesFilter(shouldSortByPopulation = true)
+            vm.uiState.value.filter shouldBe filter
+            verify(exactly = 1) {
+                mockCountriesRepository.getEuropeanCountries(filter)
+            }
+        }
 
     @Test
     fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() {

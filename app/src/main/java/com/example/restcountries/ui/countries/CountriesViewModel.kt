@@ -22,7 +22,7 @@ data class CountryItemUiState(
     val area: Float? = null,
     val flagUrl: String? = null,
     val population: Int? = null,
-): Serializable {
+) : Serializable {
 
     val languagesCommaSeparated: String = languages.joinToString()
     val bordersCommaSeparated: String = borders.joinToString()
@@ -46,6 +46,7 @@ data class CountryItemUiState(
 data class CountriesFilter(
     val searchQuery: String? = null,
     val shouldSortAlphabetically: Boolean = false,
+    val shouldSortByPopulation: Boolean = false,
 )
 
 @HiltViewModel
@@ -79,6 +80,12 @@ class CountriesViewModel @Inject constructor(
     fun sortAlphabetically(shouldSort: Boolean) {
         _uiState.update {
             it.copy(filter = it.filter.copy(shouldSortAlphabetically = shouldSort))
+        }
+    }
+
+    fun sortByPopulation(shouldSort: Boolean) {
+        _uiState.update {
+            it.copy(filter = it.filter.copy(shouldSortByPopulation = shouldSort))
         }
     }
 
