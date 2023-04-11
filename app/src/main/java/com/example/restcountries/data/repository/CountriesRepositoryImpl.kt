@@ -24,8 +24,7 @@ class CountriesRepositoryImpl @Inject constructor(
         )
         return Pager(
             config = config,
-            //FIXME: CountriesPagingSource should handle the sorting
-            pagingSourceFactory = { CountriesPagingSource(countriesService, countriesFilter?.searchQuery) }
+            pagingSourceFactory = { CountriesPagingSource(countriesService, countriesFilter) }
         ).flow
     }
 
