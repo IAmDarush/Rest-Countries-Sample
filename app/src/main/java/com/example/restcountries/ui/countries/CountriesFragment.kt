@@ -86,6 +86,12 @@ class CountriesFragment : Fragment() {
             viewModel.search(it?.toString() ?: "")
         }.launchIn(lifecycleScope)
 
+        binding.btnFilter.setOnClickListener {
+            findNavController().navigate(
+                CountriesFragmentDirections.actionCountriesFragmentToFilterBottomSheet()
+            )
+        }
+
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.countriesFlow.collectLatest {
