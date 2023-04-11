@@ -45,6 +45,7 @@ data class CountryItemUiState(
 
 data class CountriesFilter(
     val searchQuery: String? = null,
+    val shouldSortAlphabetically: Boolean = false,
 )
 
 @HiltViewModel
@@ -64,7 +65,7 @@ class CountriesViewModel @Inject constructor(
         flowOf(it.filter)
     }.distinctUntilChanged()
         .flatMapLatest { filter ->
-            countriesRepository.getEuropeanCountries(filter.searchQuery).map { pagingData ->
+            countriesRepository.getEuropeanCountries(filter).map { pagingData ->
                 pagingData.map { CountryItemUiState.mapDomainCountryToUi(it) }
             }
         }.cachedIn(viewModelScope)
@@ -72,6 +73,12 @@ class CountriesViewModel @Inject constructor(
     fun search(searchQuery: String) {
         _uiState.update {
             it.copy(filter = it.filter.copy(searchQuery = searchQuery))
+        }
+    }
+
+    fun sortAlphabetically(shouldSort: Boolean) {
+        _uiState.update {
+            it.copy(filter = it.filter.copy(shouldSortAlphabetically = shouldSort))
         }
     }
 
