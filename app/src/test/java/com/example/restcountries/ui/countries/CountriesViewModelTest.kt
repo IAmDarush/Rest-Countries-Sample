@@ -90,8 +90,15 @@ class CountriesViewModelTest {
         }
 
         vm = CountriesViewModel(mockCountriesRepository)
+        vm.uiState.value.isLoading shouldBe false
+        vm.uiState.value.showErrorLayout shouldBe false
+        vm.uiState.value.showCountriesList shouldBe false
         val countriesList = vm.countriesFlow.asSnapshot(this) {}
+        vm.isLoading()
 
+        vm.uiState.value.isLoading shouldBe true
+        vm.uiState.value.showErrorLayout shouldBe false
+        vm.uiState.value.showCountriesList shouldBe false
         countriesList.shouldBeEmpty()
         verify(exactly = 1) {
             mockCountriesRepository.getEuropeanCountries(CountriesFilter())
