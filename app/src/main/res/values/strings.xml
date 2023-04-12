@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Rest Countries</string>
     <string name="countries_fragment_label">Countries</string>
-    <string name="countries_input_search_hint">Type country name</string>
+    <string name="countries_input_search_hint">Search countries</string>
     <string name="details_label_capital">Capital</string>
     <string name="details_label_subregion">Subregion</string>
     <string name="details_label_languages">Languages</string>
@@ -9,4 +9,11 @@
     <string name="details_label_area">Area</string>
     <string name="details_label_borders">Borders</string>
     <string name="details_fragment_label">Details</string>
+    <string name="countries_filter_title">Sort and Filter</string>
+    <string name="filter_sheet_sort_alphabetical_order">Alphabetical order</string>
+    <string name="filter_sheet_sort_population">Population</string>
+    <string name="filter_sheet_label_sort_by">Sort by</string>
+    <string name="filter_sheet_label_subregion">Subregion</string>
+    <string name="action_apply">Apply</string>
+    <string name="action_rest_all">Rest All</string>
 </resources>

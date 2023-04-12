@@ -17,12 +17,12 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/layoutSearch"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:hint="@string/countries_input_search_hint"
         android:padding="16dp"
         app:endIconMode="clear_text"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/btnFilter"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:startIconDrawable="@drawable/round_search_24">
@@ -33,6 +33,18 @@
             android:layout_height="wrap_content" />
 
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnFilter"
+        style="?attr/materialIconButtonOutlinedStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:icon="@drawable/round_filter_list_24"
+        app:layout_constraintBottom_toBottomOf="@id/layoutSearch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/layoutSearch"
+        app:layout_constraintTop_toTopOf="@id/layoutSearch" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -10,6 +10,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.restcountries.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -32,6 +33,12 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
+
+        navController.addOnDestinationChangedListener { controller, _, _ ->
+            val backStackLabels =
+                controller.backQueue.joinToString(" -> ") { it.destination.label ?: "?" }
+            Timber.tag("BackStack").i("\uD83D\uDCDA $backStackLabels")
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

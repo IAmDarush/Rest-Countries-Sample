@@ -2,6 +2,7 @@ package com.example.restcountries.ui.binding
 
 import android.graphics.drawable.Drawable
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 
@@ -17,4 +18,9 @@ fun loadImage(
         .error(error)
         .placeholder(placeholder)
         .into(view)
+}
+
+@BindingAdapter("commaSeparatedNumber")
+fun separateNumber(view: TextView, number: Int) {
+    view.text = "%,d".format(number)
 }

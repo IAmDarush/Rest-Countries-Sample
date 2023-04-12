@@ -3,20 +3,34 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/CountriesFragment">
+    android:label="NavGraph"
+    app:startDestination="@id/countriesNavGraph">
+
+    <navigation
+        android:id="@+id/countriesNavGraph"
+        android:label="CountriesNavGraph"
+        app:startDestination="@id/countriesFragment">
+        <fragment
+            android:id="@+id/countriesFragment"
+            android:name="com.example.restcountries.ui.countries.CountriesFragment"
+            android:label="@string/countries_fragment_label"
+            tools:layout="@layout/fragment_countries">
+            <action
+                android:id="@+id/action_CountriesFragment_to_DetailsFragment"
+                app:destination="@id/detailsFragment" />
+            <action
+                android:id="@+id/action_CountriesFragment_to_filterBottomSheet"
+                app:destination="@id/filterBottomSheet" />
+        </fragment>
+        <dialog
+            android:id="@+id/filterBottomSheet"
+            android:name="com.example.restcountries.ui.countries.FilterBottomSheet"
+            android:label="@string/countries_filter_title"
+            tools:layout="@layout/bottom_sheet_filter" />
+    </navigation>
 
     <fragment
-        android:id="@+id/CountriesFragment"
-        android:name="com.example.restcountries.ui.countries.CountriesFragment"
-        android:label="@string/countries_fragment_label"
-        tools:layout="@layout/fragment_countries" >
-        <action
-            android:id="@+id/action_CountriesFragment_to_DetailsFragment"
-            app:destination="@id/DetailsFragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/DetailsFragment"
+        android:id="@+id/detailsFragment"
         android:name="com.example.restcountries.ui.details.DetailsFragment"
         android:label="@string/details_fragment_label"
         tools:layout="@layout/fragment_details">

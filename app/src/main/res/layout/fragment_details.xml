@@ -153,7 +153,7 @@
                         android:id="@+id/tvPopulation"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@{ viewModel.population.toString() }"
+                        commaSeparatedNumber="@{ viewModel.population }"
                         android:textAlignment="textEnd"
                         android:textAppearance="?textAppearanceSubtitle1"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -177,13 +177,13 @@
                         android:id="@+id/tvArea"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="@{ viewModel.area.toString() }"
+                        android:text="@{ viewModel.area.toString() + ` km²` }"
                         android:textAlignment="textEnd"
                         android:textAppearance="?textAppearanceSubtitle1"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/lblCapital"
                         app:layout_constraintTop_toTopOf="@id/lblArea"
-                        tools:text="357114.0" />
+                        tools:text="357114.0 km²" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/lblBorders"

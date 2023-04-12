@@ -4,6 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.restcountries.data.remote.CountriesService
 import com.example.restcountries.data.remote.model.Country
+import com.example.restcountries.ui.countries.CountriesFilter
+import com.example.restcountries.ui.countries.SortType
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
@@ -13,7 +15,7 @@ const val NETWORK_PAGE_SIZE = 10
 
 class CountriesPagingSource(
     private val countriesService: CountriesService,
-    private val searchQuery: String?
+    private val countriesFilter: CountriesFilter?
 ) : PagingSource<Int, Country>() {
 
     // FIXME: remove local caching once the server is able to send paginated data
@@ -24,11 +26,27 @@ class CountriesPagingSource(
         Timber.i("PageIndexKey = $pageIndexKey")
         return try {
             if (cachedCountries.isEmpty()) {
-                cachedCountries = countriesService.getEuropeanCountries().filter {
-                    if (searchQuery != null)
-                        it.name?.common?.contains(searchQuery, ignoreCase = true) == true
-                    else true
-                }
+                cachedCountries = countriesService.getEuropeanCountries()
+                    .filter {
+                        if (countriesFilter?.searchQuery != null)
+                            it.name?.common?.contains(
+                                countriesFilter.searchQuery,
+                                ignoreCase = true
+                            ) == true
+                        else true
+                    }.filter {
+                        if (countriesFilter?.subregions?.isNotEmpty() == true) {
+                            countriesFilter.subregions.contains(it.subregion)
+                        } else true
+                    }.sortedWith(
+                        compareBy {
+                            when (countriesFilter?.sortType) {
+                                SortType.ALPHABETICAL_ASC -> it.name?.common
+                                SortType.POPULATION_ASC -> it.population
+                                else -> 0 // Don't sort
+                            }
+                        }
+                    )
             }
 
             val fromIndex = STARTING_PAGE_INDEX + pageIndexKey * params.loadSize
