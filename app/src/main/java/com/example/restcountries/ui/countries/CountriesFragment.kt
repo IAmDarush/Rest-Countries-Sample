@@ -56,6 +56,8 @@ class CountriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCountriesBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -142,14 +144,16 @@ class CountriesFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             countriesAdapter.loadStateFlow.collectLatest { loadStates ->
-                val isLoading = loadStates.refresh is LoadState.Loading
-                binding.progressIndicator.visibility = when (isLoading) {
-                    true -> View.VISIBLE
-                    false -> View.INVISIBLE
-                }
-                if (!isLoading) (view.parent as? ViewGroup)?.doOnPreDraw {
-                    // RecyclerView items are ready. Begin postponed transitions.
-                    startPostponedEnterTransition()
+                when (val loadState = loadStates.refresh) {
+                    is LoadState.NotLoading -> {
+                        viewModel.loadSucceeded()
+                        (view.parent as? ViewGroup)?.doOnPreDraw {
+                            // RecyclerView items are ready. Begin postponed transitions.
+                            startPostponedEnterTransition()
+                        }
+                    }
+                    LoadState.Loading -> viewModel.isLoading()
+                    is LoadState.Error -> viewModel.loadFailed(loadState.error)
                 }
             }
         }

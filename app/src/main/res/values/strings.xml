@@ -16,4 +16,8 @@
     <string name="filter_sheet_label_subregion">Subregion</string>
     <string name="action_apply">Apply</string>
     <string name="action_rest_all">Rest All</string>
+    <string name="action_retry">Retry</string>
+    <string name="message_error_internet_error">Internet connection lost</string>
+    <string name="message_error_server_error">Internet connection lost</string>
+    <string name="message_error_unknown_error">Something went wrong</string>
 </resources>

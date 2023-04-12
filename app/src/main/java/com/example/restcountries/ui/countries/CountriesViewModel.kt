@@ -67,7 +67,7 @@ class CountriesViewModel @Inject constructor(
     data class UiState(
         val filter: CountriesFilter = CountriesFilter(),
         val showErrorLayout: Boolean = false,
-        @StringRes val errorMessageId: Int = -1,
+        @StringRes val errorMessageId: Int = R.string.message_error_unknown_error,
         val showCountriesList: Boolean = false,
         val isLoading: Boolean = false
     ) {
@@ -161,7 +161,7 @@ class CountriesViewModel @Inject constructor(
         _filterUiState.update { it.copy(sortType = SortType.NONE) }
     }
 
-    fun loadFailed(exception: Exception?) {
+    fun loadFailed(exception: Throwable?) {
         val errorMessageId = when (exception) {
             is UnknownHostException -> R.string.message_error_internet_error
             is HttpException -> R.string.message_error_server_error

@@ -1,6 +1,7 @@
 package com.example.restcountries.ui.binding
 
 import android.graphics.drawable.Drawable
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -23,4 +24,10 @@ fun loadImage(
 @BindingAdapter("commaSeparatedNumber")
 fun separateNumber(view: TextView, number: Int) {
     view.text = "%,d".format(number)
+}
+
+@BindingAdapter("isVisible")
+fun setViewVisibility(view: View, isVisible: Boolean) {
+    if (isVisible) view.visibility = View.VISIBLE
+    else view.visibility = View.GONE
 }
