@@ -9,6 +9,7 @@ import com.example.restcountries.ui.countries.SortType
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException
+import java.net.UnknownHostException
 
 private const val STARTING_PAGE_INDEX = 0
 const val NETWORK_PAGE_SIZE = 10
@@ -70,6 +71,10 @@ class CountriesPagingSource(
         } catch (exception: IOException) {
             return LoadResult.Error(exception)
         } catch (exception: HttpException) {
+            return LoadResult.Error(exception)
+        } catch (exception: UnknownHostException) {
+            return LoadResult.Error(exception)
+        } catch (exception: Exception) {
             return LoadResult.Error(exception)
         }
     }

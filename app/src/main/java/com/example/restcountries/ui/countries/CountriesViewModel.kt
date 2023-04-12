@@ -1,16 +1,20 @@
 package com.example.restcountries.ui.countries
 
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
+import com.example.restcountries.R
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.repository.CountriesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import retrofit2.HttpException
 import java.io.Serializable
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 data class CountryItemUiState(
@@ -61,7 +65,11 @@ class CountriesViewModel @Inject constructor(
 ) : ViewModel() {
 
     data class UiState(
-        val filter: CountriesFilter = CountriesFilter()
+        val filter: CountriesFilter = CountriesFilter(),
+        val showErrorLayout: Boolean = false,
+        @StringRes val errorMessageId: Int = -1,
+        val showCountriesList: Boolean = false,
+        val isLoading: Boolean = false
     ) {
 
         val filterCount: Int
@@ -151,6 +159,22 @@ class CountriesViewModel @Inject constructor(
 
     fun sortByNone() {
         _filterUiState.update { it.copy(sortType = SortType.NONE) }
+    }
+
+    fun loadFailed(exception: Exception?) {
+        val errorMessageId = when (exception) {
+            is UnknownHostException -> R.string.message_error_internet_error
+            is HttpException -> R.string.message_error_server_error
+            else -> R.string.message_error_unknown_error
+        }
+        _uiState.update {
+            it.copy(
+                showCountriesList = false,
+                showErrorLayout = true,
+                errorMessageId = errorMessageId,
+                isLoading = false
+            )
+        }
     }
 
 }

@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.testing.asPagingSourceFactory
 import androidx.paging.testing.asSnapshot
 import com.example.restcountries.MainCoroutineRule
+import com.example.restcountries.R
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
@@ -26,6 +27,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.net.UnknownHostException
 import java.util.*
 
 class CountriesViewModelTest {
@@ -99,7 +101,7 @@ class CountriesViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is being fetched, When it it succeeds, Then populate the list`() =
+    fun `Given the countries list is being fetched, When it succeeds, Then populate the list`() =
         runTest {
             val deferred = CompletableDeferred<Unit>()
             mockCountriesRepository.apply {
@@ -119,6 +121,22 @@ class CountriesViewModelTest {
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilter())
             }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Given the countries list is being fetched, When it fails, Then display the error`() =
+        runTest {
+            vm = CountriesViewModel(mockCountriesRepository)
+            vm.uiState.value.showErrorLayout shouldBe false
+            vm.uiState.value.showCountriesList shouldBe false
+
+            vm.loadFailed(UnknownHostException())
+
+            vm.uiState.value.showErrorLayout shouldBe true
+            vm.uiState.value.errorMessageId shouldBe R.string.message_error_internet_error
+            vm.uiState.value.showCountriesList shouldBe false
+            vm.uiState.value.isLoading shouldBe false
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
