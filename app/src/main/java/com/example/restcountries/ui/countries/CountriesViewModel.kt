@@ -139,7 +139,14 @@ class CountriesViewModel @Inject constructor(
 
     fun resetFilters() {
         _filterUiState.update { FilterUiState() }
-        _uiState.update { it.copy(filter = CountriesFilter()) }
+        _uiState.update {
+            it.copy(
+                filter = it.filter.copy(
+                    sortType = SortType.NONE,
+                    subregions = setOf()
+                )
+            )
+        }
     }
 
     fun sortByNone() {

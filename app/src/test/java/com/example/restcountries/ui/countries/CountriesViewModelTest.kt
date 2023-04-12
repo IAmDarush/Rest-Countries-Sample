@@ -300,16 +300,18 @@ class CountriesViewModelTest {
     @Test
     fun `Given the countries list is ready, When the user wants to clear all the filtering, Then show the whole list`() =
         runTest {
+            val dummySearchQuery = "dummySearch"
             val emptyFilter = CountriesFilter(
                 searchQuery = null,
                 sortType = SortType.NONE,
                 subregions = setOf()
             )
             val fullFilter = CountriesFilter(
-                searchQuery = null,
+                searchQuery = dummySearchQuery,
                 sortType = SortType.ALPHABETICAL_ASC,
                 subregions = setOf("Northern Europe", "Western Europe")
             )
+            val searchFilter = CountriesFilter(searchQuery = dummySearchQuery)
             mockCountriesRepository.apply {
                 every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
                 every { getEuropeanCountries(fullFilter) } returns getCountriesListFlow(this@runTest)
@@ -317,6 +319,7 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
+            vm.search(dummySearchQuery)
             vm.sortAlphabetically()
             val subregions = setOf("Western Europe", "Northern Europe")
             subregions.forEach {
@@ -338,11 +341,15 @@ class CountriesViewModelTest {
             )
             vm.filterUiState.value.filterCount shouldBe 0
             vm.uiState.value.filterCount shouldBe 0
+            vm.uiState.value.filter.sortType shouldBe SortType.NONE
+            vm.uiState.value.filter.subregions shouldBe setOf()
+            vm.uiState.value.filter.searchQuery shouldBe dummySearchQuery
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(fullFilter)
+                mockCountriesRepository.getEuropeanCountries(emptyFilter)
             }
             verify(exactly = 2) {
-                mockCountriesRepository.getEuropeanCountries(emptyFilter)
+                mockCountriesRepository.getEuropeanCountries(searchFilter)
             }
         }
 
