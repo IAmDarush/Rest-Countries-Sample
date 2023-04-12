@@ -151,9 +151,9 @@
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/tvPopulation"
+                        commaSeparatedNumber="@{ viewModel.population }"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        commaSeparatedNumber="@{ viewModel.population }"
                         android:textAlignment="textEnd"
                         android:textAppearance="?textAppearanceSubtitle1"
                         app:layout_constraintEnd_toEndOf="parent"

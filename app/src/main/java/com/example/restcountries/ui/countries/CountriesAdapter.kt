@@ -2,13 +2,17 @@ package com.example.restcountries.ui.countries
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.restcountries.databinding.ItemCountryBinding
+import com.example.restcountries.ui.details.DetailsFragment
 
 class CountriesAdapter(
-    val onItemClick: (item: CountryItemUiState) -> Unit
+    val onItemClick: (item: CountryItemUiState, navigatorExtras: FragmentNavigator.Extras) -> Unit
 ) : PagingDataAdapter<CountryItemUiState, CountriesAdapter.CountryItemViewHolder>(COUNTRY_DIFFER) {
 
     override fun onBindViewHolder(holder: CountryItemViewHolder, position: Int) {
@@ -34,12 +38,17 @@ class CountriesAdapter(
             clearData()
 
             getItem(position)?.let { item ->
+                ViewCompat.setTransitionName(binding.tvCountry, "transition_country_$position")
+
                 binding.tvCountry.text = item.name
                 binding.tvSubRegion.text = item.subregion
                 binding.tvCapital.text = item.capital
 
                 binding.root.setOnClickListener {
-                    onItemClick(item)
+                    val navigatorExtras = FragmentNavigatorExtras(
+                        binding.tvCountry to DetailsFragment.ViewTransitions.COUNTRY_NAME_TRANSITION
+                    )
+                    onItemClick(item, navigatorExtras)
                 }
             }
 
