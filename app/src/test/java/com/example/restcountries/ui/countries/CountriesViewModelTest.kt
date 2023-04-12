@@ -118,13 +118,20 @@ class CountriesViewModelTest {
             }
 
             vm = CountriesViewModel(mockCountriesRepository)
+            vm.uiState.value.isLoading shouldBe false
+            vm.uiState.value.showCountriesList shouldBe false
+            vm.uiState.value.showErrorLayout shouldBe false
             var countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.shouldBeEmpty()
 
             deferred.complete(Unit)
             countriesList = vm.countriesFlow.asSnapshot(this) {}
+            vm.loadSucceeded()
 
             countriesList.shouldNotBeEmpty()
+            vm.uiState.value.isLoading shouldBe false
+            vm.uiState.value.showCountriesList shouldBe true
+            vm.uiState.value.showErrorLayout shouldBe false
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilter())
             }

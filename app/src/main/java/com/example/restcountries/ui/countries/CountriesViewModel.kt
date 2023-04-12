@@ -177,6 +177,16 @@ class CountriesViewModel @Inject constructor(
         }
     }
 
+    fun loadSucceeded() {
+        _uiState.update {
+            it.copy(
+                showCountriesList = true,
+                showErrorLayout = false,
+                isLoading = false
+            )
+        }
+    }
+
     fun isLoading() {
         _uiState.update {
             it.copy(
