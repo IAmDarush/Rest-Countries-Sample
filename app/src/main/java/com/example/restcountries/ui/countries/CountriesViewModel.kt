@@ -193,7 +193,7 @@ class CountriesViewModel @Inject constructor(
             it.copy(
                 isLoading = true,
                 showErrorLayout = false,
-                showCountriesList = false
+                showCountriesList = true
             )
         }
     }
@@ -203,7 +203,7 @@ class CountriesViewModel @Inject constructor(
             it.copy(
                 isLoading = true,
                 showErrorLayout = false,
-                showCountriesList = false,
+                showCountriesList = true,
                 retryCount = it.retryCount + 1
             )
         }

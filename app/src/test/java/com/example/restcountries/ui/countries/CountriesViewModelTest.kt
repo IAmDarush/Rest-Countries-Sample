@@ -98,7 +98,7 @@ class CountriesViewModelTest {
 
         vm.uiState.value.isLoading shouldBe true
         vm.uiState.value.showErrorLayout shouldBe false
-        vm.uiState.value.showCountriesList shouldBe false
+        vm.uiState.value.showCountriesList shouldBe true
         countriesList.shouldBeEmpty()
         verify(exactly = 1) {
             mockCountriesRepository.getEuropeanCountries(CountriesFilter())
@@ -171,7 +171,7 @@ class CountriesViewModelTest {
             vm.retryLoading()
             vm.uiState.value.isLoading shouldBe true
             vm.uiState.value.showErrorLayout shouldBe false
-            vm.uiState.value.showCountriesList shouldBe false
+            vm.uiState.value.showCountriesList shouldBe true
             verify(exactly = 2) {
                 mockCountriesRepository.getEuropeanCountries(any())
             }
