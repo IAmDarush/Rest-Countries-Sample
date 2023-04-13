@@ -155,6 +155,30 @@ class CountriesViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
+    fun `Given the network error is displayed, When the user wants to retry, Then start loading the data again`() =
+        runTest {
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries(any()) } returns getCountriesListFlow(this@runTest)
+            }
+            vm = CountriesViewModel(mockCountriesRepository)
+            vm.countriesFlow.asSnapshot(this) {}
+
+            vm.loadFailed(null)
+            vm.uiState.value.isLoading shouldBe false
+            vm.uiState.value.showErrorLayout shouldBe true
+            vm.uiState.value.showCountriesList shouldBe false
+
+            vm.retryLoading()
+            vm.uiState.value.isLoading shouldBe true
+            vm.uiState.value.showErrorLayout shouldBe false
+            vm.uiState.value.showCountriesList shouldBe false
+            verify(exactly = 2) {
+                mockCountriesRepository.getEuropeanCountries(any())
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
     fun `Given the countries list is fetched, When the user wants to search for a specific country, Then reduce the list`() =
         runTest {
             val dummySearchQuery = "germany"

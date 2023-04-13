@@ -3,7 +3,6 @@ package com.example.restcountries.ui.countries
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.restcountries.R
@@ -69,7 +68,8 @@ class CountriesViewModel @Inject constructor(
         val showErrorLayout: Boolean = false,
         @StringRes val errorMessageId: Int = R.string.message_error_unknown_error,
         val showCountriesList: Boolean = false,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val retryCount: Int = 0
     ) {
 
         val filterCount: Int
@@ -99,11 +99,12 @@ class CountriesViewModel @Inject constructor(
     private val _filterUiState = MutableStateFlow(FilterUiState())
     val filterUiState: StateFlow<FilterUiState> = _filterUiState.asStateFlow()
 
+    private val filterFlow = uiState.map { it.filter }.distinctUntilChanged()
+    private val retryFlow = uiState.map { it.retryCount }.distinctUntilChanged()
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val countriesFlow: Flow<PagingData<CountryItemUiState>> = uiState.flatMapLatest {
-        flowOf(it.filter)
-    }.distinctUntilChanged()
-        .flatMapLatest { filter ->
+    val countriesFlow =
+        filterFlow.combine(retryFlow) { filter, _ -> filter }.flatMapLatest { filter ->
             countriesRepository.getEuropeanCountries(filter).map { pagingData ->
                 pagingData.map { CountryItemUiState.mapDomainCountryToUi(it) }
             }
@@ -193,6 +194,17 @@ class CountriesViewModel @Inject constructor(
                 isLoading = true,
                 showErrorLayout = false,
                 showCountriesList = false
+            )
+        }
+    }
+
+    fun retryLoading() {
+        _uiState.update {
+            it.copy(
+                isLoading = true,
+                showErrorLayout = false,
+                showCountriesList = false,
+                retryCount = it.retryCount + 1
             )
         }
     }
