@@ -13,7 +13,7 @@ class CountriesRepositoryImpl @Inject constructor(
     private val countriesService: CountriesService
 ) : CountriesRepository {
     // TODO: cache the getEuropeanCountries network response here until the server is able
-    // to handle filtered queries
+    //  to handle filtered queries
 
     override fun getEuropeanCountries(countriesFilter: CountriesFilter?): Flow<PagingData<Country>> {
         val config = PagingConfig(

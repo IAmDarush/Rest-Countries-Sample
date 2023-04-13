@@ -84,7 +84,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layoutSearch">
+            app:layout_constraintTop_toBottomOf="@id/layoutSearch"
+            tools:visibility="invisible">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tvError"
@@ -101,6 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:onClick="@{ () -> viewModel.retryLoading() }"
                 android:text="@string/action_retry"
                 app:icon="@drawable/round_refresh_24" />
 
