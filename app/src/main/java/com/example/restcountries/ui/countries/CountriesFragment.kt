@@ -10,6 +10,7 @@ import android.widget.EditText
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
@@ -55,6 +56,8 @@ class CountriesFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCountriesBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -95,9 +98,10 @@ class CountriesFragment : Fragment() {
             WindowInsetsCompat.CONSUMED
         }
 
-        countriesAdapter = CountriesAdapter {
+        countriesAdapter = CountriesAdapter { item, navigatorExtras ->
             findNavController().navigate(
-                CountriesFragmentDirections.actionCountriesFragmentToDetailsFragment(it)
+                CountriesFragmentDirections.actionCountriesFragmentToDetailsFragment(item),
+                navigatorExtras = navigatorExtras
             )
         }
 
@@ -134,12 +138,22 @@ class CountriesFragment : Fragment() {
             }
         }
 
+        // RecyclerView must wait for any data to load and for the RecyclerView items to be
+        // ready to draw before starting the transition animation.
+        postponeEnterTransition()
+
         viewLifecycleOwner.lifecycleScope.launch {
             countriesAdapter.loadStateFlow.collectLatest { loadStates ->
-                val isLoading = loadStates.refresh is LoadState.Loading
-                binding.progressIndicator.visibility = when (isLoading) {
-                    true -> View.VISIBLE
-                    false -> View.INVISIBLE
+                when (val loadState = loadStates.refresh) {
+                    is LoadState.NotLoading -> {
+                        viewModel.loadSucceeded()
+                        (view.parent as? ViewGroup)?.doOnPreDraw {
+                            // RecyclerView items are ready. Begin postponed transitions.
+                            startPostponedEnterTransition()
+                        }
+                    }
+                    LoadState.Loading -> viewModel.isLoading()
+                    is LoadState.Error -> viewModel.loadFailed(loadState.error)
                 }
             }
         }

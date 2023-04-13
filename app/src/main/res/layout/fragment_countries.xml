@@ -1,62 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.countries.CountriesFragment">
+<layout>
 
-    <com.google.android.material.progressindicator.LinearProgressIndicator
-        android:id="@+id/progressIndicator"
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.example.restcountries.ui.countries.CountriesViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:indeterminate="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        tools:context=".ui.countries.CountriesFragment">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/layoutSearch"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/countries_input_search_hint"
-        android:padding="16dp"
-        app:endIconMode="clear_text"
-        app:layout_constraintEnd_toStartOf="@id/btnFilter"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:startIconDrawable="@drawable/round_search_24">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etSearch"
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressIndicator"
+            isVisible="@{ viewModel.uiState.isLoading }"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layoutSearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/countries_input_search_hint"
+            android:padding="16dp"
+            app:endIconMode="clear_text"
+            app:layout_constraintEnd_toStartOf="@id/btnFilter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:startIconDrawable="@drawable/round_search_24">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnFilter"
-        style="?attr/materialIconButtonOutlinedStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        app:icon="@drawable/round_filter_list_24"
-        app:layout_constraintBottom_toBottomOf="@id/layoutSearch"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/layoutSearch"
-        app:layout_constraintTop_toTopOf="@id/layoutSearch" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:lines="1" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/layoutSearch"
-        tools:itemCount="12"
-        tools:listitem="@layout/item_country" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFilter"
+            style="?attr/materialIconButtonOutlinedStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:icon="@drawable/round_filter_list_24"
+            app:layout_constraintBottom_toBottomOf="@id/layoutSearch"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/layoutSearch"
+            app:layout_constraintTop_toTopOf="@id/layoutSearch" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            isVisible="@{ viewModel.uiState.showCountriesList }"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutSearch"
+            tools:itemCount="12"
+            tools:listitem="@layout/item_country" />
+
+        <LinearLayout
+            android:id="@+id/layoutError"
+            isVisible="@{ viewModel.uiState.showErrorLayout }"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layoutSearch"
+            tools:visibility="invisible">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tvError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text='@{ viewModel.uiState.errorMessageId }'
+                android:textAppearance="?textAppearanceBodyLarge"
+                android:textColor="?colorError"
+                tools:text="@string/message_error_unknown_error" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnRetry"
+                style="@style/Widget.Material3.Button.ElevatedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:onClick="@{ () -> viewModel.retryLoading() }"
+                android:text="@string/action_retry"
+                app:icon="@drawable/round_refresh_24" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

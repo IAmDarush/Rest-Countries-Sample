@@ -6,6 +6,7 @@ import androidx.paging.PagingData
 import androidx.paging.testing.asPagingSourceFactory
 import androidx.paging.testing.asSnapshot
 import com.example.restcountries.MainCoroutineRule
+import com.example.restcountries.R
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
@@ -26,6 +27,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.net.UnknownHostException
 import java.util.*
 
 class CountriesViewModelTest {
@@ -88,8 +90,15 @@ class CountriesViewModelTest {
         }
 
         vm = CountriesViewModel(mockCountriesRepository)
+        vm.uiState.value.isLoading shouldBe false
+        vm.uiState.value.showErrorLayout shouldBe false
+        vm.uiState.value.showCountriesList shouldBe false
         val countriesList = vm.countriesFlow.asSnapshot(this) {}
+        vm.isLoading()
 
+        vm.uiState.value.isLoading shouldBe true
+        vm.uiState.value.showErrorLayout shouldBe false
+        vm.uiState.value.showCountriesList shouldBe true
         countriesList.shouldBeEmpty()
         verify(exactly = 1) {
             mockCountriesRepository.getEuropeanCountries(CountriesFilter())
@@ -99,7 +108,7 @@ class CountriesViewModelTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `Given the countries list is being fetched, When it it succeeds, Then populate the list`() =
+    fun `Given the countries list is being fetched, When it succeeds, Then populate the list`() =
         runTest {
             val deferred = CompletableDeferred<Unit>()
             mockCountriesRepository.apply {
@@ -109,15 +118,62 @@ class CountriesViewModelTest {
             }
 
             vm = CountriesViewModel(mockCountriesRepository)
+            vm.uiState.value.isLoading shouldBe false
+            vm.uiState.value.showCountriesList shouldBe false
+            vm.uiState.value.showErrorLayout shouldBe false
             var countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.shouldBeEmpty()
 
             deferred.complete(Unit)
             countriesList = vm.countriesFlow.asSnapshot(this) {}
+            vm.loadSucceeded()
 
             countriesList.shouldNotBeEmpty()
+            vm.uiState.value.isLoading shouldBe false
+            vm.uiState.value.showCountriesList shouldBe true
+            vm.uiState.value.showErrorLayout shouldBe false
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilter())
+            }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Given the countries list is being fetched, When it fails, Then display the error`() =
+        runTest {
+            vm = CountriesViewModel(mockCountriesRepository)
+            vm.uiState.value.showErrorLayout shouldBe false
+            vm.uiState.value.showCountriesList shouldBe false
+
+            vm.loadFailed(UnknownHostException())
+
+            vm.uiState.value.showErrorLayout shouldBe true
+            vm.uiState.value.errorMessageId shouldBe R.string.message_error_internet_error
+            vm.uiState.value.showCountriesList shouldBe false
+            vm.uiState.value.isLoading shouldBe false
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Given the network error is displayed, When the user wants to retry, Then start loading the data again`() =
+        runTest {
+            mockCountriesRepository.apply {
+                every { getEuropeanCountries(any()) } returns getCountriesListFlow(this@runTest)
+            }
+            vm = CountriesViewModel(mockCountriesRepository)
+            vm.countriesFlow.asSnapshot(this) {}
+
+            vm.loadFailed(null)
+            vm.uiState.value.isLoading shouldBe false
+            vm.uiState.value.showErrorLayout shouldBe true
+            vm.uiState.value.showCountriesList shouldBe false
+
+            vm.retryLoading()
+            vm.uiState.value.isLoading shouldBe true
+            vm.uiState.value.showErrorLayout shouldBe false
+            vm.uiState.value.showCountriesList shouldBe true
+            verify(exactly = 2) {
+                mockCountriesRepository.getEuropeanCountries(any())
             }
         }
 
@@ -300,16 +356,18 @@ class CountriesViewModelTest {
     @Test
     fun `Given the countries list is ready, When the user wants to clear all the filtering, Then show the whole list`() =
         runTest {
+            val dummySearchQuery = "dummySearch"
             val emptyFilter = CountriesFilter(
                 searchQuery = null,
                 sortType = SortType.NONE,
                 subregions = setOf()
             )
             val fullFilter = CountriesFilter(
-                searchQuery = null,
+                searchQuery = dummySearchQuery,
                 sortType = SortType.ALPHABETICAL_ASC,
                 subregions = setOf("Northern Europe", "Western Europe")
             )
+            val searchFilter = CountriesFilter(searchQuery = dummySearchQuery)
             mockCountriesRepository.apply {
                 every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
                 every { getEuropeanCountries(fullFilter) } returns getCountriesListFlow(this@runTest)
@@ -317,6 +375,7 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
+            vm.search(dummySearchQuery)
             vm.sortAlphabetically()
             val subregions = setOf("Western Europe", "Northern Europe")
             subregions.forEach {
@@ -338,11 +397,15 @@ class CountriesViewModelTest {
             )
             vm.filterUiState.value.filterCount shouldBe 0
             vm.uiState.value.filterCount shouldBe 0
+            vm.uiState.value.filter.sortType shouldBe SortType.NONE
+            vm.uiState.value.filter.subregions shouldBe setOf()
+            vm.uiState.value.filter.searchQuery shouldBe dummySearchQuery
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(fullFilter)
+                mockCountriesRepository.getEuropeanCountries(emptyFilter)
             }
             verify(exactly = 2) {
-                mockCountriesRepository.getEuropeanCountries(emptyFilter)
+                mockCountriesRepository.getEuropeanCountries(searchFilter)
             }
         }
 
