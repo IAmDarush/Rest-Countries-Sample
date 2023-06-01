@@ -85,7 +85,7 @@ class CountriesViewModelTest {
     fun `Given the screen is opened, Then start fetching the countries list`() = runTest {
         val deferred = CompletableDeferred<Unit>()
         mockCountriesRepository.apply {
-            every { getEuropeanCountries(CountriesFilter()) } returns
+            every { getEuropeanCountries(CountriesFilterModel()) } returns
                     getCountriesListFlow(this@runTest, deferred)
         }
 
@@ -101,7 +101,7 @@ class CountriesViewModelTest {
         vm.uiState.value.showCountriesList shouldBe true
         countriesList.shouldBeEmpty()
         verify(exactly = 1) {
-            mockCountriesRepository.getEuropeanCountries(CountriesFilter())
+            mockCountriesRepository.getEuropeanCountries(CountriesFilterModel())
         }
         deferred.complete(Unit)
     }
@@ -112,7 +112,7 @@ class CountriesViewModelTest {
         runTest {
             val deferred = CompletableDeferred<Unit>()
             mockCountriesRepository.apply {
-                every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(
+                every { getEuropeanCountries(CountriesFilterModel()) } returns getCountriesListFlow(
                     this@runTest, deferred
                 )
             }
@@ -133,7 +133,7 @@ class CountriesViewModelTest {
             vm.uiState.value.showCountriesList shouldBe true
             vm.uiState.value.showErrorLayout shouldBe false
             verify(exactly = 1) {
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter())
+                mockCountriesRepository.getEuropeanCountries(CountriesFilterModel())
             }
         }
 
@@ -183,8 +183,8 @@ class CountriesViewModelTest {
         runTest {
             val dummySearchQuery = "germany"
             mockCountriesRepository.apply {
-                every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(this@runTest)
-                every { getEuropeanCountries(CountriesFilter(dummySearchQuery)) } returns getCountriesListFlow(
+                every { getEuropeanCountries(CountriesFilterModel()) } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(CountriesFilterModel(dummySearchQuery)) } returns getCountriesListFlow(
                     this@runTest, searchQuery = dummySearchQuery
                 )
             }
@@ -199,8 +199,8 @@ class CountriesViewModelTest {
             countriesList.size shouldBe 1
             vm.uiState.value.filter.searchQuery shouldBe dummySearchQuery
             verify(exactly = 1) {
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter())
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter("germany"))
+                mockCountriesRepository.getEuropeanCountries(CountriesFilterModel())
+                mockCountriesRepository.getEuropeanCountries(CountriesFilterModel("germany"))
             }
         }
 
@@ -210,8 +210,8 @@ class CountriesViewModelTest {
         runTest {
             val dummySearchQuery = "invalidCountry"
             mockCountriesRepository.apply {
-                every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(this@runTest)
-                every { getEuropeanCountries(CountriesFilter(dummySearchQuery)) } returns getCountriesListFlow(
+                every { getEuropeanCountries(CountriesFilterModel()) } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(CountriesFilterModel(dummySearchQuery)) } returns getCountriesListFlow(
                     this@runTest, searchQuery = dummySearchQuery
                 )
             }
@@ -226,8 +226,8 @@ class CountriesViewModelTest {
             countriesList.size shouldBe 0
             vm.uiState.value.filter.searchQuery shouldBe dummySearchQuery
             verify(exactly = 1) {
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter())
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter(dummySearchQuery))
+                mockCountriesRepository.getEuropeanCountries(CountriesFilterModel())
+                mockCountriesRepository.getEuropeanCountries(CountriesFilterModel(dummySearchQuery))
             }
         }
 
@@ -236,7 +236,7 @@ class CountriesViewModelTest {
     fun `Given the countries list is ready, When the user wants to sort alphabetically, Then sort the list by alphabetic order ascending`() =
         runTest {
             mockCountriesRepository.apply {
-                every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(CountriesFilterModel()) } returns getCountriesListFlow(this@runTest)
             }
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
@@ -251,7 +251,7 @@ class CountriesViewModelTest {
             vm.filterUiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
             vm.filterUiState.value.filterCount shouldBe 1
             vm.uiState.value.filterCount shouldBe 1
-            val filter = CountriesFilter(sortType = SortType.ALPHABETICAL_ASC)
+            val filter = CountriesFilterModel(sortType = SortType.ALPHABETICAL_ASC)
             verify {
                 mockCountriesRepository.getEuropeanCountries(filter)
             }
@@ -262,7 +262,7 @@ class CountriesViewModelTest {
     fun `Given the countries list is ready, When the user wants to sort by population, Then sort the list by population ascending`() =
         runTest {
             mockCountriesRepository.apply {
-                every { getEuropeanCountries(CountriesFilter()) } returns getCountriesListFlow(this@runTest)
+                every { getEuropeanCountries(CountriesFilterModel()) } returns getCountriesListFlow(this@runTest)
             }
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
@@ -277,9 +277,9 @@ class CountriesViewModelTest {
             vm.filterUiState.value.sortType shouldBe SortType.POPULATION_ASC
             vm.filterUiState.value.filterCount shouldBe 1
             vm.uiState.value.filterCount shouldBe 1
-            val filter = CountriesFilter(sortType = SortType.POPULATION_ASC)
+            val filter = CountriesFilterModel(sortType = SortType.POPULATION_ASC)
             verify(exactly = 1) {
-                mockCountriesRepository.getEuropeanCountries(CountriesFilter())
+                mockCountriesRepository.getEuropeanCountries(CountriesFilterModel())
                 mockCountriesRepository.getEuropeanCountries(filter)
             }
         }
@@ -288,7 +288,7 @@ class CountriesViewModelTest {
     @Test
     fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() =
         runTest {
-            val emptyFilter = CountriesFilter()
+            val emptyFilter = CountriesFilterModel()
             mockCountriesRepository.apply {
                 every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
             }
@@ -307,7 +307,7 @@ class CountriesViewModelTest {
             vm.filterUiState.value.subregions.shouldContainOnly(subRegion)
             vm.filterUiState.value.filterCount shouldBe 1
             vm.uiState.value.filterCount shouldBe 1
-            val filter = CountriesFilter(subregions = setOf(subRegion))
+            val filter = CountriesFilterModel(subregions = setOf(subRegion))
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(emptyFilter)
                 mockCountriesRepository.getEuropeanCountries(filter)
@@ -318,7 +318,7 @@ class CountriesViewModelTest {
     @Test
     fun `Given the countries list is ready, When the user wants to filter and sort, Then show filtered list`() =
         runTest {
-            val emptyFilter = CountriesFilter()
+            val emptyFilter = CountriesFilterModel()
             mockCountriesRepository.apply {
                 every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
             }
@@ -342,7 +342,7 @@ class CountriesViewModelTest {
             vm.applyFilters()
 
             vm.uiState.value.filterCount shouldBe 3
-            val filter = CountriesFilter(
+            val filter = CountriesFilterModel(
                 sortType = SortType.POPULATION_ASC,
                 subregions = subregions
             )
@@ -357,17 +357,17 @@ class CountriesViewModelTest {
     fun `Given the countries list is ready, When the user wants to clear all the filtering, Then show the whole list`() =
         runTest {
             val dummySearchQuery = "dummySearch"
-            val emptyFilter = CountriesFilter(
+            val emptyFilter = CountriesFilterModel(
                 searchQuery = null,
                 sortType = SortType.NONE,
                 subregions = setOf()
             )
-            val fullFilter = CountriesFilter(
+            val fullFilter = CountriesFilterModel(
                 searchQuery = dummySearchQuery,
                 sortType = SortType.ALPHABETICAL_ASC,
                 subregions = setOf("Northern Europe", "Western Europe")
             )
-            val searchFilter = CountriesFilter(searchQuery = dummySearchQuery)
+            val searchFilter = CountriesFilterModel(searchQuery = dummySearchQuery)
             mockCountriesRepository.apply {
                 every { getEuropeanCountries(emptyFilter) } returns getCountriesListFlow(this@runTest)
                 every { getEuropeanCountries(fullFilter) } returns getCountriesListFlow(this@runTest)

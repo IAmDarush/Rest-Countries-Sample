@@ -4,7 +4,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.restcountries.data.remote.CountriesService
 import com.example.restcountries.data.remote.model.Country
-import com.example.restcountries.ui.countries.CountriesFilter
+import com.example.restcountries.ui.countries.CountriesFilterModel
 import com.example.restcountries.ui.countries.SortType
 import retrofit2.HttpException
 import timber.log.Timber
@@ -16,7 +16,7 @@ const val NETWORK_PAGE_SIZE = 10
 
 class CountriesPagingSource(
     private val countriesService: CountriesService,
-    private val countriesFilter: CountriesFilter?
+    private val countriesFilterModel: CountriesFilterModel?
 ) : PagingSource<Int, Country>() {
 
     // FIXME: remove local caching once the server is able to send paginated data
@@ -29,19 +29,19 @@ class CountriesPagingSource(
             if (cachedCountries.isEmpty()) {
                 cachedCountries = countriesService.getEuropeanCountries()
                     .filter {
-                        if (countriesFilter?.searchQuery != null)
+                        if (countriesFilterModel?.searchQuery != null)
                             it.name?.common?.contains(
-                                countriesFilter.searchQuery,
+                                countriesFilterModel.searchQuery,
                                 ignoreCase = true
                             ) == true
                         else true
                     }.filter {
-                        if (countriesFilter?.subregions?.isNotEmpty() == true) {
-                            countriesFilter.subregions.contains(it.subregion)
+                        if (countriesFilterModel?.subregions?.isNotEmpty() == true) {
+                            countriesFilterModel.subregions.contains(it.subregion)
                         } else true
                     }.sortedWith(
                         compareBy {
-                            when (countriesFilter?.sortType) {
+                            when (countriesFilterModel?.sortType) {
                                 SortType.ALPHABETICAL_ASC -> it.name?.common
                                 SortType.POPULATION_ASC -> it.population
                                 else -> 0 // Don't sort

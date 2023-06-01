@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.restcountries.data.remote.CountriesService
 import com.example.restcountries.data.remote.model.Country
-import com.example.restcountries.ui.countries.CountriesFilter
+import com.example.restcountries.ui.countries.CountriesFilterModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ class CountriesRepositoryImpl @Inject constructor(
     // TODO: cache the getEuropeanCountries network response here until the server is able
     //  to handle filtered queries
 
-    override fun getEuropeanCountries(countriesFilter: CountriesFilter?): Flow<PagingData<Country>> {
+    override fun getEuropeanCountries(countriesFilterModel: CountriesFilterModel?): Flow<PagingData<Country>> {
         val config = PagingConfig(
             pageSize = NETWORK_PAGE_SIZE,
             enablePlaceholders = false,
@@ -24,7 +24,7 @@ class CountriesRepositoryImpl @Inject constructor(
         )
         return Pager(
             config = config,
-            pagingSourceFactory = { CountriesPagingSource(countriesService, countriesFilter) }
+            pagingSourceFactory = { CountriesPagingSource(countriesService, countriesFilterModel) }
         ).flow
     }
 

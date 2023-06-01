@@ -46,7 +46,7 @@ data class CountryItemUiState(
     }
 }
 
-data class CountriesFilter(
+data class CountriesFilterModel(
     val searchQuery: String? = null,
     val sortType: SortType = SortType.NONE,
     val subregions: Set<String> = setOf(),
@@ -64,7 +64,7 @@ class CountriesViewModel @Inject constructor(
 ) : ViewModel() {
 
     data class UiState(
-        val filter: CountriesFilter = CountriesFilter(),
+        val filter: CountriesFilterModel = CountriesFilterModel(),
         val showErrorLayout: Boolean = false,
         @StringRes val errorMessageId: Int = R.string.message_error_unknown_error,
         val showCountriesList: Boolean = false,
