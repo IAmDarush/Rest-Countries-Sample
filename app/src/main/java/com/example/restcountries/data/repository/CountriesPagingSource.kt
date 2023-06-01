@@ -4,8 +4,8 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.restcountries.data.remote.CountriesService
 import com.example.restcountries.data.remote.model.Country
-import com.example.restcountries.ui.countries.CountriesFilterModel
-import com.example.restcountries.ui.countries.SortType
+import com.example.restcountries.data.model.CountriesFilterModel
+import com.example.restcountries.data.model.SortType
 import retrofit2.HttpException
 import timber.log.Timber
 import java.io.IOException

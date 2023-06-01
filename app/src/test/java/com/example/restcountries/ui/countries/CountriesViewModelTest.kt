@@ -7,6 +7,8 @@ import androidx.paging.testing.asPagingSourceFactory
 import androidx.paging.testing.asSnapshot
 import com.example.restcountries.MainCoroutineRule
 import com.example.restcountries.R
+import com.example.restcountries.data.model.CountriesFilterModel
+import com.example.restcountries.data.model.SortType
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository

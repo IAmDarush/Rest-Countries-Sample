@@ -19,7 +19,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.restcountries.ui.countries.CountriesViewModel
-import com.example.restcountries.ui.countries.SortType
+import com.example.restcountries.data.model.SortType
 import com.example.restcountries.utils.ViewUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.color.MaterialColors

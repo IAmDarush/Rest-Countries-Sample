@@ -5,7 +5,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.example.restcountries.data.remote.CountriesService
 import com.example.restcountries.data.remote.model.Country
-import com.example.restcountries.ui.countries.CountriesFilterModel
+import com.example.restcountries.data.model.CountriesFilterModel
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import androidx.paging.map
 import com.example.restcountries.R
+import com.example.restcountries.data.model.CountriesFilterModel
+import com.example.restcountries.data.model.SortType
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.repository.CountriesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,18 +46,6 @@ data class CountryItemUiState(
             )
         }
     }
-}
-
-data class CountriesFilterModel(
-    val searchQuery: String? = null,
-    val sortType: SortType = SortType.NONE,
-    val subregions: Set<String> = setOf(),
-)
-
-enum class SortType {
-    NONE,
-    ALPHABETICAL_ASC,
-    POPULATION_ASC
 }
 
 @HiltViewModel
