@@ -1,4 +1,4 @@
-package com.example.restcountries.ui.countries
+package com.example.restcountries.ui.filter
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +18,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.restcountries.ui.countries.CountriesViewModel
+import com.example.restcountries.ui.countries.SortType
 import com.example.restcountries.utils.ViewUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.color.MaterialColors

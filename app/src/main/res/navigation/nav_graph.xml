@@ -24,7 +24,7 @@
         </fragment>
         <dialog
             android:id="@+id/filterBottomSheet"
-            android:name="com.example.restcountries.ui.countries.FilterBottomSheet"
+            android:name="com.example.restcountries.ui.filter.FilterBottomSheet"
             android:label="@string/countries_filter_title"
             tools:layout="@layout/bottom_sheet_filter" />
     </navigation>
