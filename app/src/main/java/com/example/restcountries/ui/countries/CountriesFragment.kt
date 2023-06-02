@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.restcountries.R
 import com.example.restcountries.databinding.FragmentCountriesBinding
+import com.example.restcountries.ui.filter.FilterData
 import com.example.restcountries.utils.ViewUtils
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.badge.BadgeUtils
@@ -118,8 +119,12 @@ class CountriesFragment : Fragment() {
         }.launchIn(lifecycleScope)
 
         binding.btnFilter.setOnClickListener {
+            val filterData = FilterData(
+                sortType = viewModel.uiState.value.filter.sortType,
+                subregions = viewModel.uiState.value.filter.subregions
+            )
             findNavController().navigate(
-                CountriesFragmentDirections.actionCountriesFragmentToFilterBottomSheet()
+                CountriesFragmentDirections.actionCountriesFragmentToFilterBottomSheet(filterData)
             )
         }
 

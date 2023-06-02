@@ -26,7 +26,12 @@
             android:id="@+id/filterBottomSheet"
             android:name="com.example.restcountries.ui.filter.FilterBottomSheet"
             android:label="@string/countries_filter_title"
-            tools:layout="@layout/bottom_sheet_filter" />
+            tools:layout="@layout/bottom_sheet_filter" >
+            <argument
+                android:name="filter_data"
+                app:argType="com.example.restcountries.ui.filter.FilterData"
+                app:nullable="true" />
+        </dialog>
     </navigation>
 
     <fragment
