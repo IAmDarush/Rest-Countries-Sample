@@ -20,7 +20,8 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     data class UiState(
         val sortType: SortType = SortType.NONE,
         val subregions: Set<Subregion> = setOf(),
-        val clearAllFilters: Boolean = false
+        val clearAllFilters: Boolean = false,
+        val applyAllFilters: Boolean = false
     ) {
         val filterCount: Int
             get() {
@@ -70,6 +71,12 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
     fun clearAllFilters() {
         _uiState.update {
             it.copy(clearAllFilters = true, subregions = setOf(), sortType = SortType.NONE)
+        }
+    }
+
+    fun applyAllFilters() {
+        _uiState.update {
+            it.copy(applyAllFilters = true)
         }
     }
 

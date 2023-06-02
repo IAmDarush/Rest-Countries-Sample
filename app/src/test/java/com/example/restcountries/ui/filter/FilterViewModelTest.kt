@@ -26,7 +26,7 @@ class FilterViewModelTest {
             vm = FilterViewModel(savedStateHandle)
 
             vm.uiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
-            vm.uiState.value.subregions.shouldContainAll("Northern Europe")
+            vm.uiState.value.subregions.shouldContainAll(Subregion.NORTHERN_EUROPE)
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -95,19 +95,30 @@ class FilterViewModelTest {
             vm.selectSubregion(Subregion.NORTHERN_EUROPE)
             vm.selectSubregion(Subregion.WESTERN_EUROPE)
             vm.uiState.value.filterCount shouldBe 4
+            vm.uiState.value.clearAllFilters shouldBe false
 
             vm.clearAllFilters()
 
             vm.uiState.value.filterCount shouldBe 0
             vm.uiState.value.sortType shouldBe SortType.NONE
             vm.uiState.value.subregions.shouldBeEmpty()
+            vm.uiState.value.clearAllFilters shouldBe true
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given the filter screen is opened, When the user wants to apply all the filtering, Then apply the filters`() =
         runTest {
+            vm = FilterViewModel(savedStateHandle)
+            vm.setSortType(SortType.POPULATION_ASC)
+            vm.selectSubregion(Subregion.SOUTHEAST_EUROPE)
+            vm.selectSubregion(Subregion.NORTHERN_EUROPE)
+            vm.uiState.value.filterCount shouldBe 3
+            vm.uiState.value.applyAllFilters shouldBe false
 
+            vm.applyAllFilters()
+
+            vm.uiState.value.applyAllFilters shouldBe true
         }
 
 }
