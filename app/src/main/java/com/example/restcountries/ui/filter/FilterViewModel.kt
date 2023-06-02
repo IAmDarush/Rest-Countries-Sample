@@ -19,8 +19,16 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     data class UiState(
         val sortType: SortType = SortType.NONE,
-        val subregions: Set<Subregion> = setOf()
-    )
+        val subregions: Set<Subregion> = setOf(),
+        val clearAllFilters: Boolean = false
+    ) {
+        val filterCount: Int
+            get() {
+                val sortCount = if (sortType == SortType.NONE) 0 else 1
+                val filterCount = subregions.size
+                return sortCount + filterCount
+            }
+    }
 
     private val _uiState = MutableStateFlow(UiState())
     val uiState = _uiState.asStateFlow()
@@ -56,6 +64,12 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                 remove(subregion)
             }
             it.copy(subregions = subregions)
+        }
+    }
+
+    fun clearAllFilters() {
+        _uiState.update {
+            it.copy(clearAllFilters = true, subregions = setOf(), sortType = SortType.NONE)
         }
     }
 

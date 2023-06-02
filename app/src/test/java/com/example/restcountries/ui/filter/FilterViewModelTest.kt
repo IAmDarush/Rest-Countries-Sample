@@ -89,7 +89,18 @@ class FilterViewModelTest {
     @Test
     fun `Given the filter screen is opened, When the user wants to clear all the filtering, Then clear all the filters`() =
         runTest {
+            vm = FilterViewModel(savedStateHandle)
+            vm.setSortType(SortType.POPULATION_ASC)
+            vm.selectSubregion(Subregion.SOUTHEAST_EUROPE)
+            vm.selectSubregion(Subregion.NORTHERN_EUROPE)
+            vm.selectSubregion(Subregion.WESTERN_EUROPE)
+            vm.uiState.value.filterCount shouldBe 4
 
+            vm.clearAllFilters()
+
+            vm.uiState.value.filterCount shouldBe 0
+            vm.uiState.value.sortType shouldBe SortType.NONE
+            vm.uiState.value.subregions.shouldBeEmpty()
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
