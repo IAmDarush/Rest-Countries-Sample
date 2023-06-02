@@ -3,6 +3,7 @@ package com.example.restcountries.ui.filter
 import androidx.lifecycle.SavedStateHandle
 import com.example.restcountries.data.model.SortType
 import com.example.restcountries.data.model.Subregion
+import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -57,7 +58,16 @@ class FilterViewModelTest {
     @Test
     fun `Given the filter screen is opened, When the user wants to filter by a particular subregion, Then check all the selected subregions`() =
         runTest {
+            vm = FilterViewModel(savedStateHandle)
+            vm.uiState.value.subregions.shouldBeEmpty()
 
+            vm.selectSubregion(Subregion.EASTERN_EUROPE)
+            vm.selectSubregion(Subregion.NORTHERN_EUROPE)
+
+            vm.uiState.value.subregions.shouldContainAll(
+                Subregion.NORTHERN_EUROPE,
+                Subregion.EASTERN_EUROPE
+            )
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
