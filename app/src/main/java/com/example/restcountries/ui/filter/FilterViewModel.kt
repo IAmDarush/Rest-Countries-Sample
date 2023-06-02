@@ -50,4 +50,13 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         }
     }
 
+    fun deselectSubregion(subregion: Subregion) {
+        _uiState.update {
+            val subregions = it.subregions.toMutableSet().apply {
+                remove(subregion)
+            }
+            it.copy(subregions = subregions)
+        }
+    }
+
 }

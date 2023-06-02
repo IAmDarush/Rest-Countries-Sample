@@ -74,7 +74,15 @@ class FilterViewModelTest {
     @Test
     fun `Given the filter screen is opened, When the user wants deselect all the subregions, Then deselect the subregions`() =
         runTest {
+            vm = FilterViewModel(savedStateHandle)
+            vm.selectSubregion(Subregion.EASTERN_EUROPE)
+            vm.selectSubregion(Subregion.NORTHERN_EUROPE)
+            vm.uiState.value.subregions.size shouldBe 2
 
+            vm.deselectSubregion(Subregion.EASTERN_EUROPE)
+            vm.deselectSubregion(Subregion.NORTHERN_EUROPE)
+
+            vm.uiState.value.subregions.shouldBeEmpty()
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
