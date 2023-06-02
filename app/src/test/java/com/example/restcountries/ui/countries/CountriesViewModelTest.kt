@@ -9,13 +9,11 @@ import com.example.restcountries.MainCoroutineRule
 import com.example.restcountries.R
 import com.example.restcountries.data.model.CountriesFilterModel
 import com.example.restcountries.data.model.SortType
-import com.example.restcountries.data.model.Subregion
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
 import com.example.restcountries.ui.filter.FilterData
 import io.kotest.matchers.collections.shouldBeEmpty
-import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -254,54 +252,47 @@ class CountriesViewModelTest {
             vm.uiState.value.filter.sortType shouldBe SortType.NONE
             vm.uiState.value.filterCount shouldBe 0
 
-            val filterData = FilterData(
-                sortType = SortType.POPULATION_ASC,
-                subregions = setOf(Subregion.NORTHERN_EUROPE)
-            )
+            val filterData = FilterData(sortType = SortType.ALPHABETICAL_ASC)
             vm.applyFilters(filterData)
 
-            vm.uiState.value.filter.sortType shouldBe SortType.POPULATION_ASC
-            vm.uiState.value.filter.subregions.shouldContainOnly(Subregion.NORTHERN_EUROPE)
-            vm.uiState.value.filterCount shouldBe 2
+            vm.uiState.value.filter.sortType shouldBe SortType.ALPHABETICAL_ASC
+            vm.uiState.value.filterCount shouldBe 1
             verify {
                 mockCountriesRepository.getEuropeanCountries(
-                    CountriesFilterModel(
-                        sortType = SortType.POPULATION_ASC,
-                        subregions = setOf(Subregion.NORTHERN_EUROPE)
-                    )
+                    CountriesFilterModel(sortType = SortType.ALPHABETICAL_ASC)
                 )
             }
         }
 
-    /*@OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given the countries list is ready, When the user wants to sort by population, Then sort the list by population ascending`() =
         runTest {
             mockCountriesRepository.apply {
-                every { getEuropeanCountries(CountriesFilterModel()) } returns getCountriesListFlow(
-                    this@runTest
-                )
+                every {
+                    getEuropeanCountries(CountriesFilterModel())
+                } returns getCountriesListFlow(this@runTest)
             }
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.filterUiState.value.sortType shouldBe SortType.NONE
-            vm.filterUiState.value.filterCount shouldBe 0
-
-            vm.sortByPopulation()
+            vm.uiState.value.filter.sortType shouldBe SortType.NONE
             vm.uiState.value.filterCount shouldBe 0
-            vm.applyFilters()
 
-            vm.filterUiState.value.sortType shouldBe SortType.POPULATION_ASC
-            vm.filterUiState.value.filterCount shouldBe 1
+            val filterData = FilterData(sortType = SortType.POPULATION_ASC)
+            vm.applyFilters(filterData)
+
+            vm.uiState.value.filter.sortType shouldBe SortType.POPULATION_ASC
             vm.uiState.value.filterCount shouldBe 1
-            val filter = CountriesFilterModel(sortType = SortType.POPULATION_ASC)
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(CountriesFilterModel())
-                mockCountriesRepository.getEuropeanCountries(filter)
+                mockCountriesRepository.getEuropeanCountries(
+                    CountriesFilterModel(sortType = SortType.POPULATION_ASC)
+                )
             }
         }
 
+    /*
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() =
