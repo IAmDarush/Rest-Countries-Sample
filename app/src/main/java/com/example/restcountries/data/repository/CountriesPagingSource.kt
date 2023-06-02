@@ -37,7 +37,8 @@ class CountriesPagingSource(
                         else true
                     }.filter {
                         if (countriesFilterModel?.subregions?.isNotEmpty() == true) {
-                            countriesFilterModel.subregions.contains(it.subregion)
+                            countriesFilterModel.subregions.map { subregion -> subregion.subregion }
+                                .contains(it.subregion)
                         } else true
                     }.sortedWith(
                         compareBy {

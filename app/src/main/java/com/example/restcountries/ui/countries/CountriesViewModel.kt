@@ -8,6 +8,7 @@ import androidx.paging.map
 import com.example.restcountries.R
 import com.example.restcountries.data.model.CountriesFilterModel
 import com.example.restcountries.data.model.SortType
+import com.example.restcountries.data.model.Subregion
 import com.example.restcountries.data.repository.CountriesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -41,7 +42,7 @@ class CountriesViewModel @Inject constructor(
 
     data class FilterUiState(
         val sortType: SortType = SortType.NONE,
-        val subregions: Set<String> = setOf()
+        val subregions: Set<Subregion> = setOf()
     ) {
         val filterCount: Int
             get() {
@@ -82,14 +83,14 @@ class CountriesViewModel @Inject constructor(
         _filterUiState.update { it.copy(sortType = SortType.POPULATION_ASC) }
     }
 
-    fun selectSubregion(subregion: String) {
+    fun selectSubregion(subregion: Subregion) {
         val subregions = filterUiState.value.subregions.toMutableSet().apply {
             add(subregion)
         }
         _filterUiState.update { it.copy(subregions = subregions) }
     }
 
-    fun deselectSubregion(subregion: String) {
+    fun deselectSubregion(subregion: Subregion) {
         val subregions = filterUiState.value.subregions.toMutableSet().apply {
             remove(subregion)
         }

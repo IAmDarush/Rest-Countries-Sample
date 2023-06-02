@@ -20,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.restcountries.ui.countries.CountriesViewModel
 import com.example.restcountries.data.model.SortType
+import com.example.restcountries.data.model.Subregion
 import com.example.restcountries.utils.ViewUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
 import com.google.android.material.color.MaterialColors
@@ -107,10 +108,11 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
         for (index in 0 until binding.cgSubregion.childCount) {
             val chip = binding.cgSubregion.getChildAt(index) as Chip
-            chip.isChecked = viewModel.filterUiState.value.subregions.contains(chip.text.toString())
+            val subregion = enumValueOf<Subregion>(chip.text.toString())
+            chip.isChecked = viewModel.filterUiState.value.subregions.contains(subregion)
             chip.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) viewModel.selectSubregion(chip.text.toString())
-                else viewModel.deselectSubregion(chip.text.toString())
+                if (isChecked) viewModel.selectSubregion(subregion)
+                else viewModel.deselectSubregion(subregion)
             }
         }
 

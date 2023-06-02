@@ -2,6 +2,7 @@ package com.example.restcountries.ui.filter
 
 import androidx.lifecycle.SavedStateHandle
 import com.example.restcountries.data.model.SortType
+import com.example.restcountries.data.model.Subregion
 import io.kotest.matchers.collections.shouldContainAll
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -19,7 +20,7 @@ class FilterViewModelTest {
         runTest {
             savedStateHandle[KEY_FILTER_DATA] = FilterData(
                 sortType = SortType.ALPHABETICAL_ASC,
-                subregions = setOf(Subregion.NORTHERN_EUROPE.subregion)
+                subregions = setOf(Subregion.NORTHERN_EUROPE)
             )
             vm = FilterViewModel(savedStateHandle)
 

@@ -9,6 +9,7 @@ import com.example.restcountries.MainCoroutineRule
 import com.example.restcountries.R
 import com.example.restcountries.data.model.CountriesFilterModel
 import com.example.restcountries.data.model.SortType
+import com.example.restcountries.data.model.Subregion
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
@@ -301,7 +302,7 @@ class CountriesViewModelTest {
             vm.filterUiState.value.filterCount shouldBe 0
             vm.uiState.value.filterCount shouldBe 0
 
-            val subRegion = "Western Europe"
+            val subRegion = Subregion.WESTERN_EUROPE
             vm.selectSubregion(subRegion)
             vm.uiState.value.filterCount shouldBe 0
             vm.applyFilters()
@@ -331,7 +332,7 @@ class CountriesViewModelTest {
             vm.filterUiState.value.subregions shouldBe setOf()
 
             vm.sortByPopulation()
-            val subregions = setOf("Western Europe", "Northern Europe")
+            val subregions = setOf(Subregion.WESTERN_EUROPE, Subregion.NORTHERN_EUROPE)
             val iterator = subregions.iterator()
             while (iterator.hasNext()) {
                 vm.selectSubregion(iterator.next())
@@ -367,7 +368,7 @@ class CountriesViewModelTest {
             val fullFilter = CountriesFilterModel(
                 searchQuery = dummySearchQuery,
                 sortType = SortType.ALPHABETICAL_ASC,
-                subregions = setOf("Northern Europe", "Western Europe")
+                subregions = setOf(Subregion.NORTHERN_EUROPE, Subregion.WESTERN_EUROPE)
             )
             val searchFilter = CountriesFilterModel(searchQuery = dummySearchQuery)
             mockCountriesRepository.apply {
@@ -379,7 +380,7 @@ class CountriesViewModelTest {
             countriesList.size shouldBe 4
             vm.search(dummySearchQuery)
             vm.sortAlphabetically()
-            val subregions = setOf("Western Europe", "Northern Europe")
+            val subregions = setOf(Subregion.WESTERN_EUROPE, Subregion.NORTHERN_EUROPE)
             subregions.forEach {
                 vm.selectSubregion(it)
                 vm.selectSubregion(it)
