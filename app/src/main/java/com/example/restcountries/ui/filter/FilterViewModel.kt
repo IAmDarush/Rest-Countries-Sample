@@ -43,4 +43,10 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
 
     }
 
+    fun setSortType(sortType: SortType) {
+        _uiState.update {
+            it.copy(sortType = sortType)
+        }
+    }
+
 }

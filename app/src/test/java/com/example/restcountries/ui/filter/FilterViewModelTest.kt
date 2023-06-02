@@ -31,7 +31,12 @@ class FilterViewModelTest {
     @Test
     fun `Given the filter screen is opened, When the user wants to sort alphabetically, Then check the alphabetical sort order`() =
         runTest {
+            vm = FilterViewModel(savedStateHandle)
+            vm.uiState.value.sortType shouldBe SortType.NONE
 
+            vm.setSortType(SortType.ALPHABETICAL_ASC)
+
+            vm.uiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
