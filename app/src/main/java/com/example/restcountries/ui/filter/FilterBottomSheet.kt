@@ -15,6 +15,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.chip.Chip
 import androidx.annotation.OptIn
 import androidx.core.content.res.ResourcesCompat
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -33,9 +34,10 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
     private var _binding: BottomSheetFilterBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: CountriesViewModel by navGraphViewModels(R.id.countriesNavGraph) {
+    private val countriesViewModel: CountriesViewModel by navGraphViewModels(R.id.countriesNavGraph) {
         defaultViewModelProviderFactory
     }
+    private val viewModel: FilterViewModel by viewModels()
     private var badgeDrawable: BadgeDrawable? = null
 
     override fun onCreateView(
@@ -66,7 +68,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                             this, binding.btnResetAll, binding.frameLayout
                         )
                     }
-                updateBadgeDrawable(viewModel.filterUiState.value.filterCount)
+                updateBadgeDrawable(viewModel.uiState.value.filterCount)
                 binding.btnResetAll.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
@@ -83,10 +85,10 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.chipAlphabeticalSort.isChecked =
-            (viewModel.filterUiState.value.sortType == SortType.ALPHABETICAL_ASC)
+            (viewModel.uiState.value.sortType == SortType.ALPHABETICAL_ASC)
 
         binding.chipByPopulationSort.isChecked =
-            (viewModel.filterUiState.value.sortType == SortType.POPULATION_ASC)
+            (viewModel.uiState.value.sortType == SortType.POPULATION_ASC)
 
         binding.btnApply.setOnClickListener {
             viewModel.applyFilters()
@@ -99,17 +101,17 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         binding.cgSortTypes.setOnCheckedStateChangeListener { _, checkedIds ->
-            if (checkedIds.isEmpty()) viewModel.sortByNone()
+            if (checkedIds.isEmpty()) viewModel.setSortType(SortType.NONE)
             else when (checkedIds.first()) {
-                R.id.chipAlphabeticalSort -> viewModel.sortAlphabetically()
-                R.id.chipByPopulationSort -> viewModel.sortByPopulation()
+                R.id.chipAlphabeticalSort -> viewModel.setSortType(SortType.ALPHABETICAL_ASC)
+                R.id.chipByPopulationSort -> viewModel.setSortType(SortType.POPULATION_ASC)
             }
         }
 
         for (index in 0 until binding.cgSubregion.childCount) {
             val chip = binding.cgSubregion.getChildAt(index) as Chip
             val subregion = enumValueOf<Subregion>(chip.text.toString())
-            chip.isChecked = viewModel.filterUiState.value.subregions.contains(subregion)
+            chip.isChecked = viewModel.uiState.value.subregions.contains(subregion)
             chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) viewModel.selectSubregion(subregion)
                 else viewModel.deselectSubregion(subregion)
@@ -118,7 +120,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.filterUiState.map { it.filterCount }.distinctUntilChanged()
+                viewModel.uiState.map { it.filterCount }.distinctUntilChanged()
                     .collect { count ->
                         updateBadgeDrawable(count)
                     }

@@ -97,7 +97,7 @@ class FilterViewModelTest {
             vm.uiState.value.filterCount shouldBe 4
             vm.uiState.value.clearAllFilters shouldBe false
 
-            vm.clearAllFilters()
+            vm.resetFilters()
 
             vm.uiState.value.filterCount shouldBe 0
             vm.uiState.value.sortType shouldBe SortType.NONE
@@ -116,7 +116,7 @@ class FilterViewModelTest {
             vm.uiState.value.filterCount shouldBe 3
             vm.uiState.value.applyAllFilters shouldBe false
 
-            vm.applyAllFilters()
+            vm.applyFilters()
 
             vm.uiState.value.applyAllFilters shouldBe true
         }

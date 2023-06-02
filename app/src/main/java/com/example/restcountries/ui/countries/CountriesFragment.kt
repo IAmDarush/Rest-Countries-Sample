@@ -76,7 +76,7 @@ class CountriesFragment : Fragment() {
                         verticalOffsetWithText = ViewUtils.dpToPx(resources, 20f).toInt()
                         BadgeUtils.attachBadgeDrawable(this, binding.btnFilter)
                     }
-                updateBadgeDrawable(viewModel.filterUiState.value.filterCount)
+                updateBadgeDrawable(viewModel.uiState.value.filterCount)
                 binding.btnFilter.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })

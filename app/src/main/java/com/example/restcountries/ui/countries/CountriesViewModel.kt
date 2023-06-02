@@ -8,8 +8,8 @@ import androidx.paging.map
 import com.example.restcountries.R
 import com.example.restcountries.data.model.CountriesFilterModel
 import com.example.restcountries.data.model.SortType
-import com.example.restcountries.data.model.Subregion
 import com.example.restcountries.data.repository.CountriesRepository
+import com.example.restcountries.ui.filter.FilterData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
@@ -40,23 +40,8 @@ class CountriesViewModel @Inject constructor(
 
     }
 
-    data class FilterUiState(
-        val sortType: SortType = SortType.NONE,
-        val subregions: Set<Subregion> = setOf()
-    ) {
-        val filterCount: Int
-            get() {
-                val sortCount = if (sortType == SortType.NONE) 0 else 1
-                val filterCount = subregions.size
-                return sortCount + filterCount
-            }
-    }
-
     private val _uiState = MutableStateFlow(UiState())
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
-
-    private val _filterUiState = MutableStateFlow(FilterUiState())
-    val filterUiState: StateFlow<FilterUiState> = _filterUiState.asStateFlow()
 
     private val filterFlow = uiState.map { it.filter }.distinctUntilChanged()
     private val retryFlow = uiState.map { it.retryCount }.distinctUntilChanged()
@@ -75,38 +60,18 @@ class CountriesViewModel @Inject constructor(
         }
     }
 
-    fun sortAlphabetically() {
-        _filterUiState.update { it.copy(sortType = SortType.ALPHABETICAL_ASC) }
-    }
-
-    fun sortByPopulation() {
-        _filterUiState.update { it.copy(sortType = SortType.POPULATION_ASC) }
-    }
-
-    fun selectSubregion(subregion: Subregion) {
-        val subregions = filterUiState.value.subregions.toMutableSet().apply {
-            add(subregion)
+    fun applyFilters(filters: FilterData) {
+        _uiState.update {
+            it.copy(
+                filter = it.filter.copy(
+                    sortType = filters.sortType,
+                    subregions = filters.subregions
+                )
+            )
         }
-        _filterUiState.update { it.copy(subregions = subregions) }
-    }
-
-    fun deselectSubregion(subregion: Subregion) {
-        val subregions = filterUiState.value.subregions.toMutableSet().apply {
-            remove(subregion)
-        }
-        _filterUiState.update { it.copy(subregions = subregions) }
-    }
-
-    fun applyFilters() {
-        val filters = uiState.value.filter.copy(
-            sortType = filterUiState.value.sortType,
-            subregions = filterUiState.value.subregions
-        )
-        _uiState.update { it.copy(filter = filters) }
     }
 
     fun resetFilters() {
-        _filterUiState.update { FilterUiState() }
         _uiState.update {
             it.copy(
                 filter = it.filter.copy(
@@ -115,10 +80,6 @@ class CountriesViewModel @Inject constructor(
                 )
             )
         }
-    }
-
-    fun sortByNone() {
-        _filterUiState.update { it.copy(sortType = SortType.NONE) }
     }
 
     fun loadFailed(exception: Throwable?) {

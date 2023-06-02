@@ -68,13 +68,13 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
         }
     }
 
-    fun clearAllFilters() {
+    fun resetFilters() {
         _uiState.update {
             it.copy(clearAllFilters = true, subregions = setOf(), sortType = SortType.NONE)
         }
     }
 
-    fun applyAllFilters() {
+    fun applyFilters() {
         _uiState.update {
             it.copy(applyAllFilters = true)
         }
