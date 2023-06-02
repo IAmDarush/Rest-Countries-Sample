@@ -29,6 +29,9 @@ class FilterViewModel(savedStateHandle: SavedStateHandle) : ViewModel() {
                 val filterCount = subregions.size
                 return sortCount + filterCount
             }
+
+        val chipAlphabeticalSortIsChecked = sortType == SortType.ALPHABETICAL_ASC
+        val chipByPopulationSortIsChecked = sortType == SortType.POPULATION_ASC
     }
 
     private val _uiState = MutableStateFlow(UiState())

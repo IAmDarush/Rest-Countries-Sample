@@ -5,25 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import androidx.navigation.navGraphViewModels
-import com.example.restcountries.R
-import com.example.restcountries.databinding.BottomSheetFilterBinding
-import com.google.android.material.badge.BadgeDrawable
-import com.google.android.material.badge.BadgeUtils
-import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.chip.Chip
 import androidx.annotation.OptIn
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.restcountries.ui.countries.CountriesViewModel
+import androidx.navigation.navGraphViewModels
+import com.example.restcountries.R
 import com.example.restcountries.data.model.SortType
 import com.example.restcountries.data.model.Subregion
+import com.example.restcountries.databinding.BottomSheetFilterBinding
+import com.example.restcountries.ui.countries.CountriesViewModel
 import com.example.restcountries.utils.ViewUtils
+import com.google.android.material.badge.BadgeDrawable
+import com.google.android.material.badge.BadgeUtils
 import com.google.android.material.badge.ExperimentalBadgeUtils
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.chip.Chip
 import com.google.android.material.color.MaterialColors
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -46,6 +46,8 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = BottomSheetFilterBinding.inflate(inflater, container, false)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
     }
 
@@ -84,22 +86,6 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
             bottomSheetParent.parent.requestLayout()
         }
 
-        binding.chipAlphabeticalSort.isChecked =
-            (viewModel.uiState.value.sortType == SortType.ALPHABETICAL_ASC)
-
-        binding.chipByPopulationSort.isChecked =
-            (viewModel.uiState.value.sortType == SortType.POPULATION_ASC)
-
-        binding.btnApply.setOnClickListener {
-            viewModel.applyFilters()
-            dismiss()
-        }
-
-        binding.btnResetAll.setOnClickListener {
-            viewModel.resetFilters()
-            dismiss()
-        }
-
         binding.cgSortTypes.setOnCheckedStateChangeListener { _, checkedIds ->
             if (checkedIds.isEmpty()) viewModel.setSortType(SortType.NONE)
             else when (checkedIds.first()) {
@@ -110,7 +96,8 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
         for (index in 0 until binding.cgSubregion.childCount) {
             val chip = binding.cgSubregion.getChildAt(index) as Chip
-            val subregion = enumValueOf<Subregion>(chip.text.toString())
+            val subregion = getSubregionFromString(chip.text.toString())
+            requireNotNull(subregion) { "subregion must not be null" }
             chip.isChecked = viewModel.uiState.value.subregions.contains(subregion)
             chip.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) viewModel.selectSubregion(subregion)
@@ -120,10 +107,36 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.uiState.map { it.filterCount }.distinctUntilChanged()
-                    .collect { count ->
-                        updateBadgeDrawable(count)
-                    }
+                launch {
+                    viewModel.uiState.map { it.filterCount }.distinctUntilChanged()
+                        .collect { count ->
+                            updateBadgeDrawable(count)
+                        }
+                }
+
+                launch {
+                    viewModel.uiState.map { it.applyAllFilters }.distinctUntilChanged()
+                        .collect { shouldApplyFilters ->
+                            if (shouldApplyFilters) {
+                                val filterData = FilterData(
+                                    sortType = viewModel.uiState.value.sortType,
+                                    subregions = viewModel.uiState.value.subregions
+                                )
+                                countriesViewModel.applyFilters(filterData)
+                                dismiss()
+                            }
+                        }
+                }
+
+                launch {
+                    viewModel.uiState.map { it.clearAllFilters }.distinctUntilChanged()
+                        .collect { shouldResetFilters ->
+                            if (shouldResetFilters) {
+                                countriesViewModel.resetFilters()
+                                dismiss()
+                            }
+                        }
+                }
             }
         }
 
@@ -150,6 +163,16 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                     ResourcesCompat.getColor(resources, android.R.color.transparent, null)
             }
         }
+    }
+
+    private fun getSubregionFromString(text: String): Subregion? {
+        for (subregion in Subregion.values()) {
+            if (subregion.subregion == text) {
+                return subregion
+            }
+        }
+
+        return null
     }
 
 }
