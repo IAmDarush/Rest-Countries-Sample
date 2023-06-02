@@ -43,7 +43,13 @@ class FilterViewModelTest {
     @Test
     fun `Given the filter screen is opened, When the user wants deselect the sort type, Then select none of the sort types`() =
         runTest {
+            vm = FilterViewModel(savedStateHandle)
+            vm.setSortType(SortType.ALPHABETICAL_ASC)
+            vm.uiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
 
+            vm.setSortType(SortType.NONE)
+
+            vm.uiState.value.sortType shouldBe SortType.NONE
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
