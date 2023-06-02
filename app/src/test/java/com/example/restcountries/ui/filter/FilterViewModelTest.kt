@@ -1,10 +1,31 @@
 package com.example.restcountries.ui.filter
 
+import androidx.lifecycle.SavedStateHandle
+import com.example.restcountries.data.model.SortType
+import io.kotest.matchers.collections.shouldContainAll
+import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class FilterViewModelTest {
+
+    private lateinit var vm: FilterViewModel
+    private val savedStateHandle = SavedStateHandle()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `Given the filter screen is opened, When there is a saved instance state, Then update the ui state accordingly`() =
+        runTest {
+            savedStateHandle[KEY_FILTER_DATA] = FilterData(
+                sortType = SortType.ALPHABETICAL_ASC,
+                subregions = setOf(Subregion.NORTHERN_EUROPE.subregion)
+            )
+            vm = FilterViewModel(savedStateHandle)
+
+            vm.uiState.value.sortType shouldBe SortType.ALPHABETICAL_ASC
+            vm.uiState.value.subregions.shouldContainAll("Northern Europe")
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
@@ -44,13 +65,6 @@ class FilterViewModelTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given the filter screen is opened, When the user wants to apply all the filtering, Then apply the filters`() =
-        runTest {
-
-        }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `Given the filter screen is opened, When there is a saved instance state, Then update the ui state accordingly`() =
         runTest {
 
         }
