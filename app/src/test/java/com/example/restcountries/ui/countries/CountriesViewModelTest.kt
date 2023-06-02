@@ -9,11 +9,13 @@ import com.example.restcountries.MainCoroutineRule
 import com.example.restcountries.R
 import com.example.restcountries.data.model.CountriesFilterModel
 import com.example.restcountries.data.model.SortType
+import com.example.restcountries.data.model.Subregion
 import com.example.restcountries.data.remote.model.Country
 import com.example.restcountries.data.remote.model.Name
 import com.example.restcountries.data.repository.CountriesRepository
 import com.example.restcountries.ui.filter.FilterData
 import io.kotest.matchers.collections.shouldBeEmpty
+import io.kotest.matchers.collections.shouldContainOnly
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -292,7 +294,6 @@ class CountriesViewModelTest {
             }
         }
 
-    /*
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given the countries list is ready, When the user wants to filter by a particular subregion, Then show filtered list`() =
@@ -304,25 +305,24 @@ class CountriesViewModelTest {
             vm = CountriesViewModel(mockCountriesRepository)
             val countriesList = vm.countriesFlow.asSnapshot(this) {}
             countriesList.size shouldBe 4
-            vm.filterUiState.value.subregions shouldBe setOf()
-            vm.filterUiState.value.filterCount shouldBe 0
+            vm.uiState.value.filter.subregions shouldBe setOf()
             vm.uiState.value.filterCount shouldBe 0
 
-            val subRegion = Subregion.WESTERN_EUROPE
-            vm.selectSubregion(subRegion)
-            vm.uiState.value.filterCount shouldBe 0
-            vm.applyFilters()
+            val subregion = Subregion.WESTERN_EUROPE
+            val filterData = FilterData(subregions = setOf(subregion))
+            vm.applyFilters(filterData)
 
-            vm.filterUiState.value.subregions.shouldContainOnly(subRegion)
-            vm.filterUiState.value.filterCount shouldBe 1
+            vm.uiState.value.filter.subregions.shouldContainOnly(subregion)
             vm.uiState.value.filterCount shouldBe 1
-            val filter = CountriesFilterModel(subregions = setOf(subRegion))
             verify(exactly = 1) {
                 mockCountriesRepository.getEuropeanCountries(emptyFilter)
-                mockCountriesRepository.getEuropeanCountries(filter)
+                mockCountriesRepository.getEuropeanCountries(
+                    CountriesFilterModel(subregions = setOf(subregion))
+                )
             }
         }
 
+    /*
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `Given the countries list is ready, When the user wants to filter and sort, Then show filtered list`() =
